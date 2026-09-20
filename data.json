@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-18T22:37:48.359Z",
+  "updated_at": "2026-09-20T12:10:00+08:00",
   "categories": [
     {
       "id": "all",
@@ -21,53 +21,82 @@
       "name": "入党",
       "color": "#e5484d",
       "note": "申请入党的同学",
-      "default_on": false
+      "default_on": true
     },
     {
       "id": "league",
       "name": "团员",
       "color": "#f0883e",
       "note": "团员档案、团组织关系",
-      "default_on": false
+      "default_on": true
     },
     {
       "id": "aid",
       "name": "资助",
       "color": "#12a594",
       "note": "困难认定、绿色通道、助学贷款",
-      "default_on": false
+      "default_on": true
     },
     {
       "id": "dorm",
       "name": "宿舍",
       "color": "#0ea5e9",
       "note": "寝室公约等宿舍事务",
-      "default_on": false
+      "default_on": true
     }
   ],
   "events": [
     {
-      "id": "course",
-      "title": "选课",
-      "category": "study",
-      "start_date": "2026-09-17",
-      "end_date": "2026-09-19",
-      "end_time": "14:00",
-      "detail": "选课窗口 9 月 17 日到 9 月 19 日，9 月 19 日 14:00 截止。",
-      "note": "",
-      "source": "手写清单 + 群通知",
+      "id": "party_apply",
+      "title": "入党申请书",
+      "category": "party",
+      "start_date": "2026-09-23",
+      "detail": "截止时间改为 9 月 23 日。入党申请书的落款时间还没写的，统一写到 20 号；已经写好的无需修改。交过申请书和自传的同学，还需填写【入党申请人信息收集】表，表格链接以群里最新通知为准。",
+      "note": "原通知为 9 月 19 日 17:00 收齐，后改为 9 月 23 日",
+      "source": "群通知 + 手写清单",
       "links": [],
       "default_on": true
     },
     {
-      "id": "contest_teach",
-      "title": "教学竞赛报名截止",
-      "category": "study",
-      "start_date": "2026-09-19",
-      "detail": "",
-      "note": "原文只写了 9.19，具体时间没写，按当天 23:59 计",
-      "source": "手写清单",
+      "id": "emu7xl15w",
+      "title": "困难认定",
+      "category": "all",
+      "end_date": "2026-09-22",
+      "end_time": "12:00",
+      "detail": "学院：本科生院\n系：不填 \n专业：工科试验班（未来信息",
+      "note": "具体通知请在大群查找信息里搜索困难认定找辅导员发送的信息",
       "links": [],
+      "default_on": true
+    },
+    {
+      "id": "emu94sqfp",
+      "title": "入团线上表格",
+      "category": "all",
+      "end_date": "2026-09-24",
+      "end_time": "17:00",
+      "links": [],
+      "default_on": true
+    },
+    {
+      "id": "emu94tpuj",
+      "title": "入团申请书",
+      "category": "all",
+      "end_date": "2026-09-25",
+      "links": [],
+      "default_on": true
+    },
+    {
+      "id": "leave_rules",
+      "title": "请假与归寝须知",
+      "category": "all",
+      "detail": "① 每晚 23:00 必须准时归寝（特殊突发情况除外）。\n② 离校外出：至少提前 1 天，在上午 8:30-12:00、下午 14:00-17:30 向苏老师说明请假理由并提供证明（建议同时在班级办事簿提交）。家长需按下文模板发短信到 19115289785，把截图发给辅导员助理审核，再进【智慧学工】-【请销假登记】完成请假 / 销假。\n③ 周末请假：按普通请假手续办理（流程见群里 PDF）；审批时间是星期四，周五和周末的临时申请不受理。\n④ 长期周末假条：家住主城、需要长期周末回家的同学可办“周末长期请假手续”（流程见 PDF），申请书国庆后交。\n⑤ 课程请假：先向任课老师（不是助教）请假，老师同意后在工作时间（8:30-11:30、14:30-17:30）向苏老师出示证明；再按上面的流程向辅导员申请；需要纸质假条的，工作时间到理科楼 117-3 办理。\n⑥ 家长短信模板：我是xx班xx同学家长xxx，我已知晓孩子申请离校的情况，具体离校时间为xxx，返校时间为xxx，去向地点:xxx，请假理由:xxx（写清楚），请假期间是/否有课程。我们承诺，保证严格遵守法律法规与校纪校规，高度注意途中个人人身安全，离校后涉及本人的一切安全责任由请假人及家长负责。\n提醒：务必使用这个模板，短信里要写清离校、返校时间和期间是否有课，否则会影响请假审批。",
+      "source": "群通知【关于请假】",
+      "links": [
+        {
+          "label": "班级办事簿（通知查询）",
+          "url": "https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin"
+        }
+      ],
       "default_on": true
     },
     {
@@ -110,28 +139,6 @@
       "default_on": false
     },
     {
-      "id": "hardship",
-      "title": "困难认定",
-      "category": "aid",
-      "start_date": "2026-09-22",
-      "detail": "9 月 22 日前完成困难认定。",
-      "note": "",
-      "source": "手写清单",
-      "links": [],
-      "default_on": false
-    },
-    {
-      "id": "party_apply",
-      "title": "入党申请书",
-      "category": "party",
-      "start_date": "2026-09-23",
-      "detail": "截止时间改为 9 月 23 日。入党申请书的落款时间还没写的，统一写到 20 号；已经写好的无需修改。交过申请书和自传的同学，还需填写【入党申请人信息收集】表，表格链接以群里最新通知为准。",
-      "note": "原通知为 9 月 19 日 17:00 收齐，后改为 9 月 23 日",
-      "source": "群通知 + 手写清单",
-      "links": [],
-      "default_on": false
-    },
-    {
       "id": "green_channel",
       "title": "绿色通道",
       "category": "aid",
@@ -160,17 +167,6 @@
       "default_on": false
     },
     {
-      "id": "league_apply",
-      "title": "入团申请",
-      "category": "league",
-      "start_date": "2026-09-25",
-      "detail": "",
-      "note": "",
-      "source": "手写清单",
-      "links": [],
-      "default_on": false
-    },
-    {
       "id": "fitness_test",
       "title": "体测免测 / 缓测申请",
       "category": "study",
@@ -185,17 +181,6 @@
         }
       ],
       "default_on": true
-    },
-    {
-      "id": "math_contest",
-      "title": "数学竞赛报名与缴费",
-      "category": "study",
-      "end_date": "2026-09-19",
-      "detail": "数学竞赛通知需要用校园网打开，路径：重庆大学主页 → 管理机构 → 本科生院 → 交叉创新中心主页。缴费经验（同学分享）：在 PC 端点击「竞赛活动报名」进入交叉创新中心学生竞赛平台，在这个页面进入个人中心，可以重新缴纳未完成的费用。",
-      "note": "通知没有写截止时间，拿到后补上",
-      "source": "本科教务通知",
-      "links": [],
-      "default_on": false
     },
     {
       "id": "national_day",
@@ -224,33 +209,6 @@
       "detail": "群里发过《假期安全》须知，请抽空认真阅读。",
       "note": "",
       "source": "群通知",
-      "links": [],
-      "default_on": true
-    },
-    {
-      "id": "emu7j5kt3",
-      "title": "年级学生干部选举",
-      "category": "all",
-      "end_date": "2026-09-21",
-      "end_time": "18:00",
-      "detail": "",
-      "note": "",
-      "source": "",
-      "links": [
-        {
-          "label": "学生干部选拔报名表（腾讯文档）",
-          "url": "https://docs.qq.com/form/page/DZUxXYVBmdm9oc0RP"
-        }
-      ],
-      "default_on": true
-    },
-    {
-      "id": "emu7j8gof",
-      "title": "关于非国家开发银行生源地助学贷款处理的通知",
-      "category": "all",
-      "detail": "请同学们耐心等待。如有特殊情况，可致电计划财务处：65120663",
-      "note": "",
-      "source": "",
       "links": [],
       "default_on": true
     }

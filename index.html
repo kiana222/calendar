@@ -107,6 +107,14 @@ footer{max-width:1040px;margin:0 auto;padding:16px clamp(12px,3vw,26px) 36px;col
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--text);color:var(--card);
 padding:9px 16px;border-radius:99px;font-size:13px;box-shadow:var(--sh);z-index:50}
 .toast[hidden]{display:none}
+.modal-mask{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;
+padding:20px;background:rgba(15,20,30,.45);backdrop-filter:blur(2px)}
+.modal-mask[hidden]{display:none}
+.modal-card{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);
+border-radius:16px;padding:20px;box-shadow:var(--sh)}
+.modal-card h3{margin:0 0 8px;font-size:17px}
+.modal-card p{margin:0 0 16px;color:var(--muted);font-size:13.5px;line-height:1.6}
+.modal-card .pills{margin:0}
 @media(max-width:640px){
 body{padding-bottom:calc(64px + env(safe-area-inset-bottom));overscroll-behavior-y:contain}
 button,a,label,.sw{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
@@ -242,6 +250,7 @@ header,.toolbar,.no-print,.acts,.pills,footer{display:none!important}body{backgr
         <button class="ghost" data-act="copy-link" id="copyBtn">复制链接</button>
         <button class="ghost" data-act="share-link" id="shareBtn" hidden>分享到 QQ</button>
         <button class="ghost" data-act="open-link" id="openBtn">打开看看（自测）</button>
+        <button class="ghost" data-act="copy-json">复制 data.json（粘到 GitHub）</button>
         <button class="ghost" data-act="copy-group">复制今日清单</button>
       </div>
       <div class="field"><label for="linkBox">更新链接（手机长按也能复制）</label>
@@ -288,46 +297,85 @@ header,.toolbar,.no-print,.acts,.pills,footer{display:none!important}body{backgr
 <footer><span id="footName"></span><span id="footUpdated"></span><span id="footSource"></span>
 <a href="https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin" target="_blank" rel="noopener noreferrer">班级办事簿 · 通知查询</a></footer>
 <div class="toast" id="toast" hidden></div>
+<div class="modal-mask" id="modal" hidden>
+  <div class="modal-card">
+    <h3 id="modalTitle">标记为已完成？</h3>
+    <p id="modalBody"></p>
+    <div class="pills" style="margin:0">
+      <button class="primary" data-act="modal-yes" id="modalYes">确定</button>
+      <button class="ghost" data-act="modal-no">取消</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function(){
 'use strict';
 var WEEK=['一','二','三','四','五','六','日'];
 var DATA_KEY='cc-file-data-v1', PREF_KEY='cc-file-prefs-v1', ADMIN_KEY='cc-file-admin-v1';
-var SEED_UPDATED='2026-09-18T22:37:48.359Z';
+var SEED_UPDATED='2026-09-20T12:10:00+08:00';
 
 var CATS=[
  {id:'all',name:'全体',color:'#3b6cf6',note:'全班都要做的事',default_on:true},
  {id:'study',name:'学业',color:'#7c5cff',note:'选课、四六级、竞赛报名',default_on:true},
- {id:'party',name:'入党',color:'#e5484d',note:'只对提交入党材料的同学',default_on:false},
- {id:'league',name:'团员',color:'#f0883e',note:'团员档案、入团申请',default_on:false},
- {id:'aid',name:'资助',color:'#12a594',note:'困难认定、绿色通道',default_on:false},
- {id:'dorm',name:'宿舍',color:'#0ea5e9',note:'寝室公约等宿舍事务',default_on:false}
+ {id:'party',name:'入党',color:'#e5484d',note:'只对提交入党材料的同学',default_on:true},
+ {id:'league',name:'团员',color:'#f0883e',note:'团员档案、入团申请',default_on:true},
+ {id:'aid',name:'资助',color:'#12a594',note:'困难认定、绿色通道',default_on:true},
+ {id:'dorm',name:'宿舍',color:'#0ea5e9',note:'寝室公约等宿舍事务',default_on:true}
 ];
 
 var SEED_EVENTS=[
  {
-  "id": "course",
-  "title": "选课",
-  "category": "study",
-  "start_date": "2026-09-17",
-  "end_date": "2026-09-19",
-  "end_time": "14:00",
-  "detail": "选课窗口 9 月 17 日到 9 月 19 日，9 月 19 日 14:00 截止。",
-  "note": "",
-  "source": "手写清单 + 群通知",
+  "id": "party_apply",
+  "title": "入党申请书",
+  "category": "party",
+  "start_date": "2026-09-23",
+  "detail": "截止时间改为 9 月 23 日。入党申请书的落款时间还没写的，统一写到 20 号；已经写好的无需修改。交过申请书和自传的同学，还需填写【入党申请人信息收集】表，表格链接以群里最新通知为准。",
+  "note": "原通知为 9 月 19 日 17:00 收齐，后改为 9 月 23 日",
+  "source": "群通知 + 手写清单",
   "links": [],
   "default_on": true
  },
  {
-  "id": "contest_teach",
-  "title": "教学竞赛报名截止",
-  "category": "study",
-  "start_date": "2026-09-19",
-  "detail": "",
-  "note": "原文只写了 9.19，具体时间没写，按当天 23:59 计",
-  "source": "手写清单",
+  "id": "emu7xl15w",
+  "title": "困难认定",
+  "category": "all",
+  "end_date": "2026-09-22",
+  "end_time": "12:00",
+  "detail": "学院：本科生院\n系：不填 \n专业：工科试验班（未来信息",
+  "note": "具体通知请在大群查找信息里搜索困难认定找辅导员发送的信息",
   "links": [],
+  "default_on": true
+ },
+ {
+  "id": "emu94sqfp",
+  "title": "入团线上表格",
+  "category": "all",
+  "end_date": "2026-09-24",
+  "end_time": "17:00",
+  "links": [],
+  "default_on": true
+ },
+ {
+  "id": "emu94tpuj",
+  "title": "入团申请书",
+  "category": "all",
+  "end_date": "2026-09-25",
+  "links": [],
+  "default_on": true
+ },
+ {
+  "id": "leave_rules",
+  "title": "请假与归寝须知",
+  "category": "all",
+  "detail": "① 每晚 23:00 必须准时归寝（特殊突发情况除外）。\n② 离校外出：至少提前 1 天，在上午 8:30-12:00、下午 14:00-17:30 向苏老师说明请假理由并提供证明（建议同时在班级办事簿提交）。家长需按下文模板发短信到 19115289785，把截图发给辅导员助理审核，再进【智慧学工】-【请销假登记】完成请假 / 销假。\n③ 周末请假：按普通请假手续办理（流程见群里 PDF）；审批时间是星期四，周五和周末的临时申请不受理。\n④ 长期周末假条：家住主城、需要长期周末回家的同学可办“周末长期请假手续”（流程见 PDF），申请书国庆后交。\n⑤ 课程请假：先向任课老师（不是助教）请假，老师同意后在工作时间（8:30-11:30、14:30-17:30）向苏老师出示证明；再按上面的流程向辅导员申请；需要纸质假条的，工作时间到理科楼 117-3 办理。\n⑥ 家长短信模板：我是xx班xx同学家长xxx，我已知晓孩子申请离校的情况，具体离校时间为xxx，返校时间为xxx，去向地点:xxx，请假理由:xxx（写清楚），请假期间是/否有课程。我们承诺，保证严格遵守法律法规与校纪校规，高度注意途中个人人身安全，离校后涉及本人的一切安全责任由请假人及家长负责。\n提醒：务必使用这个模板，短信里要写清离校、返校时间和期间是否有课，否则会影响请假审批。",
+  "source": "群通知【关于请假】",
+  "links": [
+   {
+    "label": "班级办事簿（通知查询）",
+    "url": "https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin"
+   }
+  ],
   "default_on": true
  },
  {
@@ -370,28 +418,6 @@ var SEED_EVENTS=[
   "default_on": false
  },
  {
-  "id": "hardship",
-  "title": "困难认定",
-  "category": "aid",
-  "start_date": "2026-09-22",
-  "detail": "9 月 22 日前完成困难认定。",
-  "note": "",
-  "source": "手写清单",
-  "links": [],
-  "default_on": false
- },
- {
-  "id": "party_apply",
-  "title": "入党申请书",
-  "category": "party",
-  "start_date": "2026-09-23",
-  "detail": "截止时间改为 9 月 23 日。入党申请书的落款时间还没写的，统一写到 20 号；已经写好的无需修改。交过申请书和自传的同学，还需填写【入党申请人信息收集】表，表格链接以群里最新通知为准。",
-  "note": "原通知为 9 月 19 日 17:00 收齐，后改为 9 月 23 日",
-  "source": "群通知 + 手写清单",
-  "links": [],
-  "default_on": false
- },
- {
   "id": "green_channel",
   "title": "绿色通道",
   "category": "aid",
@@ -420,17 +446,6 @@ var SEED_EVENTS=[
   "default_on": false
  },
  {
-  "id": "league_apply",
-  "title": "入团申请",
-  "category": "league",
-  "start_date": "2026-09-25",
-  "detail": "",
-  "note": "",
-  "source": "手写清单",
-  "links": [],
-  "default_on": false
- },
- {
   "id": "fitness_test",
   "title": "体测免测 / 缓测申请",
   "category": "study",
@@ -445,17 +460,6 @@ var SEED_EVENTS=[
    }
   ],
   "default_on": true
- },
- {
-  "id": "math_contest",
-  "title": "数学竞赛报名与缴费",
-  "category": "study",
-  "end_date": "2026-09-19",
-  "detail": "数学竞赛通知需要用校园网打开，路径：重庆大学主页 → 管理机构 → 本科生院 → 交叉创新中心主页。缴费经验（同学分享）：在 PC 端点击「竞赛活动报名」进入交叉创新中心学生竞赛平台，在这个页面进入个人中心，可以重新缴纳未完成的费用。",
-  "note": "通知没有写截止时间，拿到后补上",
-  "source": "本科教务通知",
-  "links": [],
-  "default_on": false
  },
  {
   "id": "national_day",
@@ -484,33 +488,6 @@ var SEED_EVENTS=[
   "detail": "群里发过《假期安全》须知，请抽空认真阅读。",
   "note": "",
   "source": "群通知",
-  "links": [],
-  "default_on": true
- },
- {
-  "id": "emu7j5kt3",
-  "title": "年级学生干部选举",
-  "category": "all",
-  "end_date": "2026-09-21",
-  "end_time": "18:00",
-  "detail": "",
-  "note": "",
-  "source": "",
-  "links": [
-   {
-    "label": "学生干部选拔报名表（腾讯文档）",
-    "url": "https://docs.qq.com/form/page/DZUxXYVBmdm9oc0RP"
-   }
-  ],
-  "default_on": true
- },
- {
-  "id": "emu7j8gof",
-  "title": "关于非国家开发银行生源地助学贷款处理的通知",
-  "category": "all",
-  "detail": "请同学们耐心等待。如有特殊情况，可致电计划财务处：65120663",
-  "note": "",
-  "source": "",
   "links": [],
   "default_on": true
  }
@@ -571,11 +548,11 @@ function autoPrune(){
 var lastPruned=0;
 /* GitHub Pages 上读同目录的 data.json（管理员改这个文件）；file:// 打开读不到就退回内置数据 */
 function loadRepoData(){
- if(DATA_SOURCE==='本机修改'||LINK_DATA)return Promise.resolve(false);
  return fetch('data.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(repo){
-  if(!repo||!Array.isArray(repo.events)||!repo.events.length)return;
-  REPO_DATA=repo; data=loadData(); trackNew(); renderAll();
- }).catch(function(){});}
+  if(!repo||!Array.isArray(repo.events)||!repo.events.length)return false;
+  REPO_DATA=repo;   /* 只用来当"收件人手上的基础版本"，用于算增量 */
+  if(!LINK_DATA&&DATA_SOURCE!=='本机修改'){data=loadData();trackNew();renderAll();}
+  return true;}).catch(function(){return false;});}
 /* 与上一次看到的内容对比，找出新加的日志（标「新」） */
 function trackNew(){
  var ids={};
@@ -646,18 +623,43 @@ function packFull(){return {v:1,n:data.class_name,u:new Date().toISOString(),
 function baseEvents(){
  if(REPO_DATA&&REPO_DATA.events&&REPO_DATA.events.length)return REPO_DATA.events;
  return SEED_EVENTS;}
-/* 增量：只带这次新增/改过的日志，以及被删掉的 id */
+/* 增量：新日志整条发，改过的日志只发"改动的字段"（v3），被删的只发 id */
 function packDiff(){
  var base=baseEvents(),bmap={};
  base.forEach(function(e){bmap[e.id]=packEvent(e);});
- var changed=[],alive={};
+ var items=[],alive={};
  data.events.forEach(function(e){
   alive[e.id]=1;
   var p=packEvent(e),b=bmap[e.id];
-  if(!b||JSON.stringify(b)!==JSON.stringify(p))changed.push(p);});
+  if(!b){items.push(p);return;}
+  var delta=null;
+  Object.keys(p).forEach(function(k){
+   if(k==='i')return;
+   if(JSON.stringify(p[k])!==JSON.stringify(b[k])){delta=delta||{i:e.id};delta[k]=p[k];}});
+  Object.keys(b).forEach(function(k){
+   if(k==='i'||(k in p))return;
+   delta=delta||{i:e.id};delta[k]=null;});          /* 收件人那边要清掉的字段 */
+  if(delta)items.push(delta);});
  var removed=base.filter(function(e){return !alive[e.id];}).map(function(e){return e.id;});
- return {v:2,n:data.class_name,u:new Date().toISOString(),e:changed,d:removed};}
+ return {v:3,n:data.class_name,u:new Date().toISOString(),e:items,d:removed};}
 function unpackData(p){
+ if(p&&p.v===3){
+  var cur=(data.events||[]).slice(),at={},del={};
+  (p.d||[]).forEach(function(id){del[id]=1;});
+  cur=cur.filter(function(e){return !del[e.id];});
+  cur.forEach(function(e,i){at[e.id]=i;});
+  (p.e||[]).forEach(function(item){
+   var f=at[item.i];
+   if(f===undefined){                     /* 收件人没有这条：只有整条发过来的才加 */
+    if(item.t)cur.push(unpackEvent(item));
+    return;}
+   var packed=packEvent(cur[f]);
+   Object.keys(item).forEach(function(k){
+    if(k==='i')return;
+    if(item[k]===null)delete packed[k];else packed[k]=item[k];});
+   cur[f]=unpackEvent(packed);});
+  return {class_name:p.n||data.class_name,updated_at:p.u||new Date().toISOString(),
+   categories:data.categories,events:cur};}
  if(p&&p.v===2){
   var cur=(data.events||[]).slice(),del={};
   (p.d||[]).forEach(function(id){del[id]=1;});
@@ -785,10 +787,7 @@ function applyLinkFromHash(quiet){
   toast(fresh?('已载入最新数据，有 '+fresh+' 条新通知'):'已载入链接里的最新数据',3000);
   return true;})
  .catch(function(){
-  toast(frag.length<300
-   ?('链接好像被截断了（只收到 '+frag.length+' 个字符），请在群里重新复制完整一条')
-   :'这条链接打不开：请用 QQ 里完整的一条链接，或用 Chrome / Safari 打开',
-   4600);
+  toast('链接没读全（可能被聊天软件截断了），已按网址上的内容显示',4200);
   return false;});}
 function makeLinkUI(){
  return makeLink().then(function(res){var link=res.url,box=$('#linkBox');box.value=link;
@@ -801,9 +800,12 @@ function makeLinkUI(){
   $('#linkHint').textContent=res.kind==='diff'
    ?('链接只有 '+link.length+' 个字符（只带本次改动，群公告放得下）')
    :('链接 '+link.length+' 个字符（本次改动较多，带的是完整内容）');
+  if(link.length>800){
+   $('#linkHint').textContent+='　⚠️ 这条偏长，是因为你页面上的内容和线上 data.json 差得比较多。'
+    +'最稳的做法：点「复制 data.json」→ 去 GitHub 打开 data.json → 粘贴覆盖 → Commit，然后群里发固定网址（以后链接也会变短）。';}
   toast('链接已生成');return link;});}
-function doCopy(text){
- function ok(){toast('已复制，粘到 QQ 群里就行',2600);}
+function doCopy(text,quiet){
+ function ok(){if(!quiet)toast('已复制，粘到 QQ 群里就行',2600);}
  function manual(){var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.left='-9999px';
   document.body.appendChild(ta);ta.select();var done=false;try{done=document.execCommand('copy');}catch(e){}
   ta.remove();if(done)ok();else toast('复制失败，长按文本框手动复制',3400);}
@@ -1023,7 +1025,7 @@ function toggleTheme(){var arr=['auto','light','dark'],i=arr.indexOf(prefs.theme
 
 document.addEventListener('change',function(e){var el=e.target,act=el.dataset?el.dataset.act:null;if(!act)return;
  var id=el.dataset.id;
- if(act==='done'){if(el.checked)prefs.done[id]=true;else delete prefs.done[id];savePrefs();renderAll();}
+ if(act==='done'){askDone(id,el.checked);renderAll();}
  else if(act==='group'){prefs.groups[id]=el.checked;savePrefs();renderAll();}
  else if(act==='sub'){var ev=data.events.filter(function(x){return x.id===id;})[0];
   if(el.checked===isGroupOn(ev.category))delete prefs.overrides[id];else prefs.overrides[id]=el.checked;savePrefs();renderAll();}
@@ -1063,6 +1065,11 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-act
  else if(act==='notify'){askNotify();}
  else if(act==='make-link'){makeLinkUI();}
  else if(act==='copy-link'){copyLink();}
+ else if(act==='copy-json'){
+  var payload=JSON.stringify({class_name:data.class_name,updated_at:new Date().toISOString(),
+   categories:data.categories,events:data.events},null,2);
+  doCopy(payload,true);
+  toast('已复制 data.json 内容：去 GitHub 打开 data.json → 点铅笔 → 全选删除 → 粘贴 → Commit changes',6500);}
  else if(act==='share-link'){var sl=$('#linkBox').value;
   if(!sl){makeLinkUI().then(function(l){if(navigator.share)navigator.share({title:data.class_name,text:l});});return;}
   if(navigator.share)navigator.share({title:data.class_name,text:sl});}
@@ -1084,6 +1091,8 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-act
   data=loadData();renderAll();
   toast('已恢复被清理的日志，并暂停自动清理',3200);}
  else if(act==='toggle-local'){lsSet(LOCAL_KEY,lsGet(LOCAL_KEY)==='1'?'0':'1');location.reload();}
+ else if(act==='modal-yes'){applyDone();}
+ else if(act==='modal-no'){closeModal();}
  else if(act==='save-name'){data.class_name=$('#clsName').value.trim()||'班级日历';saveData();renderAll();toast('已保存');}
  else if(act==='save-cats'){collectCats();saveData();data=loadData();renderAll();toast('分类已保存');}
  else if(act==='add-cat'){collectCats();
@@ -1111,6 +1120,27 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-act
 });
 
 /* ---------- 分类管理 ---------- */
+/* 标记完成前先弹窗确认，避免误点直接把事项从列表里去掉 */
+var pendingDone=null;
+function askDone(id,checked){
+ var ev=null;
+ data.events.forEach(function(x){if(x.id===id)ev=x;});
+ if(!ev)return;
+ pendingDone={id:id,done:!!checked};
+ $('#modalTitle').textContent=checked?'确定这件事已办好了吗？':'要把这条改回未完成吗？';
+ $('#modalBody').textContent=ev.title+'（'+rangeText(ev)+'）';
+ $('#modalYes').textContent=checked?'是的，已完成':'改回未完成';
+ $('#modal').hidden=false;}
+function closeModal(){$('#modal').hidden=true;pendingDone=null;}
+function applyDone(){
+ if(!pendingDone)return;
+ if(pendingDone.done)prefs.done[pendingDone.id]=true;else delete prefs.done[pendingDone.id];
+ var title='';
+ data.events.forEach(function(x){if(x.id===pendingDone.id)title=x.title;});
+ var wasDone=pendingDone.done;
+ savePrefs();closeModal();renderAll();
+ toast(wasDone?('已完成：'+title):('已改回未完成：'+title),2400);}
+
 function renderCategories(){var box=$('#catList');if(!box)return;
  box.innerHTML=data.categories.map(function(c,i){
   return '<div class="row" style="margin-bottom:6px">'
