@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-20T12:10:00+08:00",
+  "updated_at": "2026-09-21T04:16:03.096Z",
   "categories": [
     {
       "id": "all",
@@ -123,22 +123,6 @@
       "default_on": true
     },
     {
-      "id": "league_file",
-      "title": "上交纸质团员档案 + 填自查表",
-      "category": "league",
-      "start_date": "2026-09-20",
-      "detail": "随身携带团员档案的同学，把档案交给本班同性别临时负责人，负责人核查无误后填写【腾讯文档】未来信息类 1-10 班团员档案材料自查表。档案里应有的材料：① 团员证【必须有】② 入团志愿书【必须有】③ 入团申请书（有就归档；没有的话后续统一安排补交）④ 团组织介绍信（有就归档，没有不强制要求）。档案丢失的同学，联系入团所在学校（单位）团组织申请补办，或请对方出具团员身份证明材料。转接前请在智慧团建上查看自己是否存在「团员身份未认证、缺少电子团籍」，如有需拍照上传志愿书，并联系团支部临时负责人完善手续。",
-      "note": "原文写「本周日内」，按 9 月 20 日算",
-      "source": "团组织关系转接通知",
-      "links": [
-        {
-          "label": "团员档案材料自查表（腾讯文档）",
-          "url": "https://docs.qq.com/form/page/DWmpBVFFud1BGU3dS"
-        }
-      ],
-      "default_on": false
-    },
-    {
       "id": "green_channel",
       "title": "绿色通道",
       "category": "aid",
@@ -209,6 +193,53 @@
       "detail": "群里发过《假期安全》须知，请抽空认真阅读。",
       "note": "",
       "source": "群通知",
+      "links": [],
+      "default_on": true
+    },
+    {
+      "id": "emu9rfxui",
+      "title": "问卷调查填写通知】 各连队：为精准掌握大学生思想动态，给上级决策提供参考，现全覆盖开展新时代社会主义核心价值观教育调查，调查形式为线上匿名问卷填写，所有参与学生填写信息将严格保密",
+      "category": "all",
+      "start_date": null,
+      "start_time": null,
+      "end_date": "2026-09-22",
+      "end_time": null,
+      "detail": "",
+      "note": "",
+      "source": "",
+      "links": [
+        {
+          "label": "打开链接",
+          "url": "https://wj.qq.com/s2/27943481/fj48/"
+        }
+      ],
+      "default_on": true
+    },
+    {
+      "id": "emuaqdkxq",
+      "title": "已为入党积极分子的同学提交材料",
+      "category": "all",
+      "start_date": null,
+      "start_time": null,
+      "end_date": "2026-09-23",
+      "end_time": "17:00",
+      "detail": "入党积极分子材料需要包括：（因各地情况有差异，包括但不限于）\n1、入党申请书及自传（注意审查提交入党申请书时是否年满18周岁；申请书需要至少1名培养联系人签字或签章）\n2、入党积极分子推荐材料（一般为：优秀团员青年入党积极分子推荐表）\n3、入党积极分子公示材料（一般为：关于确定**同志为入党积极分子的公示）\n4、党课结业证（如有，需在确立为入党积极分子后参加培训并结业）\n5、思想汇报（如有，从确立为积极分子起，一季度一份，须有培养联系人签字或签章）\n6、入党积极分子培养教育考察登记簿\n",
+      "note": "交到理科楼117-3辅导员处",
+      "source": "",
+      "links": [],
+      "default_on": true
+    },
+    {
+      "id": "emuaqef3w",
+      "title": "体测成绩有问题的",
+      "category": "all",
+      "start_date": null,
+      "start_time": null,
+      "end_date": null,
+      "end_time": null,
+      "detail": "联系电话:65678975\n体测办公室:体育学院201（虎溪校园）",
+      "note": "",
+      "source": "",
       "links": [],
       "default_on": true
     }
