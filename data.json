@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-22T06:29:45.469Z",
+  "updated_at": "2026-09-22T12:30:14.329Z",
   "categories": [
     {
       "id": "all",
@@ -225,15 +225,24 @@
       "start_time": null,
       "end_date": "2026-09-23",
       "end_time": "23:59",
-      "detail": "11连1排全体同学：\n根据军训工作安排，现需收取军训报告。请按要求提交：\n1. 格式要求：统一编辑为Word文档（.doc或.docx）。\n2. 命名要求：文件命名为“学号＋姓名＋11连1排XX班（军训班）”。\n例如：20260001张三11连1排1班。\n其中“XX班”请填写本人所在军训班。\n交到如下邮箱中tangheng12138@outlook.com",
+      "detail": "11连1排全体同学：\n根据军训工作安排，现需收取军训报告。请按要求提交：\n1. 格式要求：统一编辑为Word文档（.doc或.docx）。\n2. 命名要求：文件命名为“学号＋姓名＋11连1排XX班（军训班）”。\n例如：20260001张三11连1排1班。\n其中“XX班”请填写本人所在军训班。\n交到如下邮箱中",
       "note": "",
       "source": "",
-      "links": [
-        {
-          "label": "tangheng12138@outlook.com",
-          "url": "tanghe"
-        }
-      ],
+      "links": [],
+      "default_on": true
+    },
+    {
+      "id": "emucnje8h",
+      "title": "学代会代表选举",
+      "category": "all",
+      "start_date": null,
+      "start_time": null,
+      "end_date": "2026-09-23",
+      "end_time": "12:00",
+      "detail": "@全体成员 学院要选学代会代表，感兴趣的同学明天中午前私发给@09-吴俊弈-20263787-新 报名表。\n\n学生代表大会是学生向学校反映意见，参与治理的渠道。",
+      "note": "",
+      "source": "",
+      "links": [],
       "default_on": true
     }
   ]
