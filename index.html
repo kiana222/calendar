@@ -310,6 +310,20 @@ header,.toolbar,.no-print,.acts,.pills,footer{display:none!important}body{backgr
           <div class="field"><label for="f-ll">链接文字</label><input id="f-ll" placeholder="腾讯文档 / 报名入口"></div>
           <div class="field"><label for="f-lu">链接地址</label><input id="f-lu" placeholder="https://"></div>
         </div>
+        <div class="field">
+          <label>附件（Word / PDF / 图片等）</label>
+          <div class="pills" style="margin:0 0 8px">
+            <label class="ghost" style="cursor:pointer">选择文件
+              <input type="file" id="f-file" data-act="pick-file" style="display:none"></label>
+            <button class="ghost" data-act="upload-file" id="uploadFileBtn">上传到 GitHub</button>
+            <button class="ghost" data-act="attach-local" id="attachLocalBtn">存进数据里（小文件）</button>
+          </div>
+          <div id="fileList"></div>
+          <p class="hint" id="fileHint" style="margin:0">
+            选好文件后点「上传到 GitHub」，文件会放进仓库的 files 文件夹并自动生成下载链接（需要先在「发布到线上」保存 Token）；
+            没有 Token 就点「存进数据里」，适合 300KB 以内的小文件，会跟着 data.json / 更新链接一起发出去。
+          </p>
+        </div>
         <div class="pills" style="margin:0"><button class="primary" data-act="save-event" id="saveBtn">添加这条日志</button>
           <button class="ghost" data-act="cancel-edit" id="cancelBtn" hidden>取消编辑</button></div>
       </div>
@@ -321,7 +335,7 @@ header,.toolbar,.no-print,.acts,.pills,footer{display:none!important}body{backgr
 
 <footer><span id="footName"></span><span id="footUpdated"></span><span id="footSource"></span>
 <a href="https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin" target="_blank" rel="noopener noreferrer">班级办事簿 · 通知查询</a>
-<span>V3.0</span><span>未来信息01 李健铭、刘宝秋 联合制作</span></footer>
+<span>V3.1</span><span>未来信息01 李健铭、刘宝秋 联合制作</span></footer>
 <div class="toast" id="toast" hidden></div>
 <div class="modal-mask" id="modal" hidden>
   <div class="modal-card">
@@ -669,12 +683,17 @@ function packEvent(e){var o={i:e.id,t:e.title,c:e.category};
  if(e.note)o.k=e.note;
  if(e.source)o.r=e.source;
  if(e.links&&e.links.length)o.l=e.links.map(function(l){return [l.label||'打开链接',l.url];});
+ /* 附件：只把"外部链接"形式的附件放进链接（GitHub 上传得到的链接），dataURL 大文件带不动 */
+ if(e.files&&e.files.length){
+  var okFiles=e.files.filter(function(f){return f.url&&f.url.indexOf('data:')!==0;});
+  if(okFiles.length)o.z=okFiles.map(function(f){return [f.name,f.url,f.size||0];});}
  if(e.default_on===false)o.f=0;
  return o;}
 function unpackEvent(o){return {id:o.i,title:o.t,category:o.c,
   start_date:o.s||null,start_time:o.st||null,end_date:o.d||null,end_time:o.et||null,
   detail:o.x||'',note:o.k||'',source:o.r||'',
   links:(o.l||[]).map(function(pair){return {label:pair[0],url:pair[1]};}),
+  files:(o.z||[]).map(function(t){return {name:t[0],url:t[1],size:t[2]||0};}),
   default_on:o.f===0?false:true};}
 function packFull(){return {v:1,n:data.class_name,u:new Date().toISOString(),e:data.events.map(packEvent)};}
 /* 收件人手上应该有的"基础版本"：优先线上 data.json，其次页面内置数据 */
@@ -841,6 +860,11 @@ function makeLinkUI(){
    ?('已生成：链接 '+link.length+' 个字符（只带本次改动，群公告放得下）')
    :('已生成：链接 '+link.length+' 个字符（本次改动较多，带的是完整内容）');
   if(link.length>800)$('#linkHint').textContent+='　⚠️ 偏长，QQ 群公告可能截断，建议改用「一键发布到 GitHub」';
+  var bigFiles=0;
+  data.events.forEach(function(e){
+   if(!isSubbed(e)||!e.files)return;
+   e.files.forEach(function(f){if(f.url&&f.url.indexOf('data:')===0)bigFiles++;});});
+  if(bigFiles)$('#linkHint').textContent+='　⚠️ 有 '+bigFiles+' 个附件是"存进数据里"的，更新链接带不动，请改用「一键发布到 GitHub」，或把附件改成 GitHub 链接';
   toast('链接已生成');return link;});}
 function copyLink(){var box=$('#linkBox');
  if(!box.value){makeLinkUI().then(function(link){doCopy(link);});return;}
@@ -960,6 +984,7 @@ function cardHTML(ev){var c=catOf(ev.category),li=leftInfo(ev),done=isDone(ev);
  +'<p class="meta"><span>'+esc(rangeText(ev))+'</span>'+(ev.note?'<span class="note">备注：'+esc(ev.note)+'</span>':'')+'</p>'
  +(ev.detail?'<p class="detail">'+esc(ev.detail)+'</p>':'')
  +(ev.links&&ev.links.length?'<p class="links">'+ev.links.map(function(l){return '<a href="'+esc(l.url)+'" target="_blank" rel="noopener noreferrer">'+esc(l.label||'打开链接')+'</a>';}).join('')+'</p>':'')
+ +((ev.files&&ev.files.length)?'<p class="links">'+ev.files.map(function(f){return '<a href="'+esc(f.url)+'"'+(f.url&&f.url.indexOf('data:')===0?' download="'+esc(f.name)+'"':' target="_blank" rel="noopener noreferrer"')+'>📎 '+esc(f.name)+'</a>';}).join('')+'</p>':'')
  +(editMode?'<div class="acts"><button class="ghost" data-act="edit" data-id="'+ev.id+'">编辑</button><button class="ghost danger" data-act="del" data-id="'+ev.id+'">删除</button></div>':'')
  +'</div></article>';}
 function sec(title,evs){return '<h2 class="sec">'+esc(title)+'</h2><div class="list">'+evs.map(cardHTML).join('')+'</div>';}
@@ -1113,6 +1138,7 @@ document.addEventListener('change',function(e){var el=e.target,act=el.dataset?el
  else if(act==='sub'){var ev=data.events.filter(function(x){return x.id===id;})[0];
   if(el.checked===isGroupOn(ev.category))delete prefs.overrides[id];else prefs.overrides[id]=el.checked;savePrefs();renderAll();}
  else if(act==='alert'){prefs.alertHours=Number(el.value);savePrefs();}
+ else if(act==='pick-file'){chosenFile=(el.files&&el.files[0])||null;renderFileList();}
  else if(act==='ghrepo'){prefs.ghRepo=el.value.trim();savePrefs();}
  else if(act==='siteurl'){prefs.siteUrl=el.value.trim().replace(/#.*$/,'');savePrefs();toast('页面网址已保存',2200);}
  else if(act==='import-data-file'){var f=el.files[0];el.value='';if(!f)return;
@@ -1145,6 +1171,10 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-act
   prefs.removed={};savePrefs();location.reload();}
  else if(act==='notify'){askNotify();}
  else if(act==='publish-gh'){publishGitHub();}
+ else if(act==='upload-file'){if(!chosenFile){toast('先点「选择文件」选一个文件',3000);return;}uploadToGitHub(chosenFile);}
+ else if(act==='attach-local'){if(!chosenFile){toast('先点「选择文件」选一个文件',3000);return;}attachLocal(chosenFile);}
+ else if(act==='del-file'){var fi=Number(el.dataset.idx);
+  if(!isNaN(fi)){pendingFiles.splice(fi,1);renderFileList();}}
  else if(act==='copy-site'){doCopy(siteUrl());}
  else if(act==='make-link'){makeLinkUI();}
  else if(act==='copy-link'){copyLink();}
@@ -1207,6 +1237,54 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-act
 
 /* ---------- 分类管理 ---------- */
 /* 标记完成前先弹窗确认，避免误点直接把事项从列表里去掉 */
+/* ---------- 附件（Word / PDF / 图片） ---------- */
+var chosenFile=null,pendingFiles=[];
+function fmtSize(n){return n<1024?n+' B':(n<1024*1024?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB');}
+function renderFileList(){
+ var box=$('#fileList');if(!box)return;
+ box.innerHTML=pendingFiles.length
+  ?pendingFiles.map(function(f,i){return '<div class="row" style="margin-bottom:6px"><span class="info">📎 '+esc(f.name)+
+     ' <span class="hint">'+(f.size?fmtSize(f.size):'')+(f.url&&f.url.indexOf('data:')===0?'（存在数据里）':'（GitHub 链接）')+'</span></span>'+
+     '<button class="ghost danger" data-act="del-file" data-idx="'+i+'">移除</button></div>';}).join('')
+  :'';
+ var hint=$('#fileHint');
+ if(hint&&chosenFile)hint.textContent='已选择：'+chosenFile.name+'（'+fmtSize(chosenFile.size)+'）——点「上传到 GitHub」或「存进数据里」';}
+function fileToDataUrl(file){return new Promise(function(res,rej){
+ var r=new FileReader();r.onload=function(){res(r.result);};r.onerror=rej;r.readAsDataURL(file);});}
+function fileToBase64(file){return new Promise(function(res,rej){
+ var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]||'');};r.onerror=rej;r.readAsDataURL(file);});}
+function uploadToGitHub(file){
+ var token=(lsGet(GH_KEY)||'').trim();
+ if(!token){toast('先在「发布到线上」保存 GitHub Token，或者用「存进数据里」',5200);return;}
+ var repo=ghRepo(),stamp=Date.now().toString(36);
+ var path='files/'+stamp+'-'+file.name.replace(/[\\/:*?"<>|]/g,'_');
+ var api='https://api.github.com/repos/'+repo+'/contents/'+encodeURIComponent(path).replace(/%2F/g,'/');
+ var head={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'};
+ var btn=$('#uploadFileBtn');if(btn){btn.disabled=true;btn.textContent='上传中…';}
+ toast('正在上传到 '+repo+'/files …',3600);
+ fileToBase64(file).then(function(b64){
+  return fetch(api,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},head),
+   body:JSON.stringify({message:'上传附件 '+file.name,content:b64})});})
+ .then(function(res){
+  if(!res.ok)return res.json().catch(function(){return{};}).then(function(e){
+   throw new Error('HTTP '+res.status+(e.message?'：'+e.message:''));});
+  return res.json();})
+ .then(function(info){
+  var url=(info&&info.content&&info.content.download_url)||('https://raw.githubusercontent.com/'+repo+'/main/'+path);
+  pendingFiles.push({name:file.name,url:url,size:file.size});
+  chosenFile=null;if($('#f-file'))$('#f-file').value='';
+  renderFileList();if($('#fileHint'))$('#fileHint').textContent='已上传：'+file.name+'（保存这条日志后生效）';
+  toast('附件已上传到 GitHub',3200);})
+ .catch(function(err){toast('上传失败：'+err.message,5200);})
+ .finally(function(){if(btn){btn.disabled=false;btn.textContent='上传到 GitHub';}});}
+function attachLocal(file){
+ if(file.size>300*1024&&!confirm('这个文件 '+fmtSize(file.size)+'，存进数据里会让 data.json 和更新链接变大，可能发不出去。仍要继续吗？'))return;
+ fileToDataUrl(file).then(function(url){
+  pendingFiles.push({name:file.name,url:url,size:file.size});
+  chosenFile=null;if($('#f-file'))$('#f-file').value='';
+  renderFileList();if($('#fileHint'))$('#fileHint').textContent='已加入：'+file.name+'（保存这条日志后生效）';
+  toast('附件已加入这条日志',3000);});}
+
 var pendingDone=null;
 function askDone(id,checked){
  var ev=null;
@@ -1243,13 +1321,16 @@ function collectCats(){
    note:c.note||'',default_on:!!(defs[i]&&defs[i].checked)};});
  return data.categories;}
 
-function resetForm(){editingId=null;$('#f-title').value='';$('#f-sd').value='';$('#f-st').value='';$('#f-ed').value='';
+function resetForm(){editingId=null;pendingFiles=[];chosenFile=null;renderFileList();
+ if($('#f-file'))$('#f-file').value='';
+ $('#f-title').value='';$('#f-sd').value='';$('#f-st').value='';$('#f-ed').value='';
  $('#f-et').value='';$('#f-detail').value='';$('#f-source').value='';$('#f-note').value='';$('#f-ll').value='';$('#f-lu').value='';
  $('#f-on').value='1';$('#f-cat').value=data.categories[0].id;$('#saveBtn').textContent='添加这条日志';$('#cancelBtn').hidden=true;}
 function startEdit(id){var ev=data.events.filter(function(x){return x.id===id;})[0];if(!ev)return;editingId=id;
  $('#f-title').value=ev.title;$('#f-cat').value=ev.category;$('#f-on').value=ev.default_on?'1':'0';
  $('#f-sd').value=ev.start_date||'';$('#f-st').value=ev.start_time||'';$('#f-ed').value=ev.end_date||'';$('#f-et').value=ev.end_time||'';
  $('#f-detail').value=ev.detail||'';$('#f-source').value=ev.source||'';$('#f-note').value=ev.note||'';
+ pendingFiles=(ev.files||[]).slice();chosenFile=null;renderFileList();
  var l=(ev.links||[])[0];$('#f-ll').value=l?l.label:'';$('#f-lu').value=l?l.url:'';
  $('#saveBtn').textContent='保存修改';$('#cancelBtn').hidden=false;
  $('#adminForm').scrollIntoView({behavior:'smooth',block:'start'});}
@@ -1257,7 +1338,8 @@ function saveEvent(){var title=$('#f-title').value.trim();if(!title){toast('先�
  var links=[],url=$('#f-lu').value.trim();if(url)links.push({label:$('#f-ll').value.trim()||'打开链接',url:url});
  var ev={id:editingId||('e'+Date.now().toString(36)),title:title,category:$('#f-cat').value,
   start_date:$('#f-sd').value||null,start_time:$('#f-st').value||null,end_date:$('#f-ed').value||null,end_time:$('#f-et').value||null,
-  detail:$('#f-detail').value,note:$('#f-note').value,source:$('#f-source').value,links:links,default_on:$('#f-on').value==='1'};
+  detail:$('#f-detail').value,note:$('#f-note').value,source:$('#f-source').value,links:links,
+  files:pendingFiles.slice(),default_on:$('#f-on').value==='1'};
  if(editingId){data.events=data.events.map(function(x){return x.id===editingId?ev:x;});}else{data.events.push(ev);}
  saveData();resetForm();renderAll();toast('已保存');}
 
