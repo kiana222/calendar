@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-22T15:39:57.056Z",
+  "updated_at": "2026-09-23T09:16:23.750Z",
   "categories": [
     {
       "id": "all",
@@ -172,18 +172,6 @@
       "default_on": true
     },
     {
-      "id": "green_channel",
-      "title": "绿色通道",
-      "category": "aid",
-      "start_date": "2026-09-23",
-      "start_time": "12:00",
-      "detail": "9 月 23 日中午 12 点以前完成。需要信封的找负责人拿。",
-      "note": "",
-      "source": "手写清单 + 群通知",
-      "links": [],
-      "default_on": false
-    },
-    {
       "id": "league_relation",
       "title": "智慧团建 · 团组织关系转接",
       "category": "league",
@@ -262,6 +250,36 @@
           "url": "tanghe"
         }
       ],
+      "default_on": true
+    },
+    {
+      "id": "emudw09yd",
+      "title": "智慧慕课学习",
+      "category": "study",
+      "start_date": null,
+      "start_time": null,
+      "end_date": "2026-10-18",
+      "end_time": null,
+      "detail": "",
+      "note": "",
+      "source": "",
+      "links": [],
+      "files": [],
+      "default_on": true
+    },
+    {
+      "id": "emudw0sug",
+      "title": "智慧慕课考试",
+      "category": "study",
+      "start_date": "2026-10-19",
+      "start_time": null,
+      "end_date": "2026-10-23",
+      "end_time": null,
+      "detail": "",
+      "note": "",
+      "source": "",
+      "links": [],
+      "files": [],
       "default_on": true
     }
   ]
