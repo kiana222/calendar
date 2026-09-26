@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-23T09:21:22.066Z",
+  "updated_at": "2026-09-26T03:39:55.966Z",
   "categories": [
     {
       "id": "all",
@@ -61,80 +61,6 @@
   ],
   "events": [
     {
-      "id": "cadre_interview",
-      "title": "班干部竞选面试",
-      "category": "cmucu9rj8",
-      "start_date": "2026-09-23",
-      "start_time": "18:00",
-      "end_date": "2026-09-23",
-      "end_time": "21:00",
-      "detail": "时间：9 月 23 日 18:00-21:00，请提前 5 分钟到场完成候场签到，逾期未到视为自动放弃竞选资格。\n地点：重庆大学沙坪坝校区八教；候场教室 A8211，面试教室 A8213、A8214。\n形式：无领导小组讨论（群面），重点考察沟通表达、团队协作、组织统筹、临场应变等综合素养。\n准备：每人准备 1 分钟以内的自我介绍，内容简洁精炼。\n提示：提前规划出行时间、熟悉校区场地，准时到场并遵守现场秩序；面试过程保持从容自信、文明礼貌；无故缺席视为自动放弃。",
-      "note": "具体分组和教室安排见群里发的表格图片",
-      "source": "群通知【班干部竞选面试安排】",
-      "links": [],
-      "files": [],
-      "default_on": true
-    },
-    {
-      "id": "course_makeup",
-      "title": "选课补选（第五阶段）",
-      "category": "study",
-      "start_date": "2026-09-23",
-      "start_time": "09:00",
-      "end_date": "2026-09-23",
-      "end_time": "23:00",
-      "detail": "第五阶段（学生补选）：9 月 23 日 9:00 - 23:00。\n选课地址：移动端——微信公众号搜索「重庆大学本科生院」，进入后点右下角「智慧教务」，用账号密码登录；PC 端——https://my.cqu.edu.cn/enroll\n补选路径：智慧教务（移动端）→ 申请服务 → 点「选课」；智慧教务（PC 端）→ 选课管理 → 点「选课」。",
-      "source": "选课通知",
-      "links": [
-        {
-          "label": "PC 端选课入口 my.cqu.edu.cn/enroll",
-          "url": "https://my.cqu.edu.cn/enroll"
-        }
-      ],
-      "default_on": true
-    },
-    {
-      "id": "party_apply",
-      "title": "入党申请书",
-      "category": "party",
-      "start_date": "2026-09-23",
-      "detail": "截止时间改为 9 月 23 日。入党申请书的落款时间还没写的，统一写到 20 号；已经写好的无需修改。交过申请书和自传的同学，还需填写【入党申请人信息收集】表，表格链接以群里最新通知为准。",
-      "note": "原通知为 9 月 19 日 17:00 收齐，后改为 9 月 23 日",
-      "source": "群通知 + 手写清单",
-      "links": [],
-      "default_on": true
-    },
-    {
-      "id": "emu94sqfp",
-      "title": "入团线上表格",
-      "category": "cmucu90zd",
-      "start_date": null,
-      "start_time": null,
-      "end_date": "2026-09-24",
-      "end_time": "17:00",
-      "detail": "",
-      "note": "",
-      "source": "",
-      "links": [],
-      "files": [],
-      "default_on": true
-    },
-    {
-      "id": "emu94tpuj",
-      "title": "入团申请书",
-      "category": "cmucu90zd",
-      "start_date": null,
-      "start_time": null,
-      "end_date": "2026-09-25",
-      "end_time": null,
-      "detail": "",
-      "note": "",
-      "source": "",
-      "links": [],
-      "files": [],
-      "default_on": true
-    },
-    {
       "id": "leave_rules",
       "title": "请假与归寝须知",
       "category": "all",
@@ -170,22 +96,6 @@
         }
       ],
       "default_on": true
-    },
-    {
-      "id": "league_relation",
-      "title": "智慧团建 · 团组织关系转接",
-      "category": "league",
-      "start_date": "2026-09-25",
-      "detail": "2026 年团员组织关系要通过「智慧团建」系统线上转接，同时线下接收团员档案、注册团员证，线上线下同时进行。9 月 25 日之前，请在智慧团建上发起团组织关系转接申请；申请发出后，及时提醒原所在团组织审批。团支部名称示例：重庆市重庆大学本科生院未来信息类 2026 级 1 班团支部。北京、福建、广东的新生团员可加入答疑 QQ 群：1109171535。",
-      "note": "",
-      "source": "团组织关系转接通知",
-      "links": [
-        {
-          "label": "智慧团建 zhtj.youth.cn",
-          "url": "https://zhtj.youth.cn/zhtj/"
-        }
-      ],
-      "default_on": false
     },
     {
       "id": "fitness_test",
@@ -234,29 +144,10 @@
       "default_on": true
     },
     {
-      "id": "emucafok9",
-      "title": "关于收取军训报告的通知",
-      "category": "all",
-      "start_date": null,
-      "start_time": null,
-      "end_date": "2026-09-23",
-      "end_time": "23:59",
-      "detail": "11连1排全体同学：\n根据军训工作安排，现需收取军训报告。请按要求提交：\n1. 格式要求：统一编辑为Word文档（.doc或.docx）。\n2. 命名要求：文件命名为“学号＋姓名＋11连1排XX班（军训班）”。\n例如：20260001张三11连1排1班。\n其中“XX班”请填写本人所在军训班。\n交到如下邮箱中tangheng12138@outlook.com",
-      "note": "",
-      "source": "",
-      "links": [
-        {
-          "label": "tangheng12138@outlook.com",
-          "url": "tanghe"
-        }
-      ],
-      "default_on": true
-    },
-    {
       "id": "emudw09yd",
       "title": "智慧慕课学习",
       "category": "study",
-      "start_date": "2026-09-23",
+      "start_date": null,
       "start_time": null,
       "end_date": "2026-10-18",
       "end_time": null,
@@ -276,6 +167,41 @@
       "end_date": "2026-10-23",
       "end_time": null,
       "detail": "",
+      "note": "",
+      "source": "",
+      "links": [],
+      "files": [],
+      "default_on": true
+    },
+    {
+      "id": "emuhubj9k",
+      "title": "假期去向登记",
+      "category": "all",
+      "start_date": null,
+      "start_time": null,
+      "end_date": "2026-09-29",
+      "end_time": "16:00",
+      "detail": "所有人在智慧学工平台【节假日去向】填报",
+      "note": "",
+      "source": "",
+      "links": [
+        {
+          "label": "打开链接",
+          "url": "https://zhxg.cqu.edu.cn/dashboard"
+        }
+      ],
+      "files": [],
+      "default_on": true
+    },
+    {
+      "id": "emuhuchcw",
+      "title": "假期中离校请假",
+      "category": "all",
+      "start_date": null,
+      "start_time": null,
+      "end_date": "2026-09-29",
+      "end_time": "16:00",
+      "detail": "1. 9月29日16:00前，家长发短信给苏老师：19115289785\n2. 你截图短信，上传到智慧学工去向板块作为请假证明\n3. 返校后在系统完成返校登记\n✅返校查寝：10月8日23:00查寝，按时返校，不要迟到。\n✅其他时段离校，按学校常规请假手续办理。",
       "note": "",
       "source": "",
       "links": [],
