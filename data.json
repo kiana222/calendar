@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-28T07:05:56.018Z",
+  "updated_at": "2026-09-28T09:07:01.162Z",
   "categories": [
     {
       "id": "all",
@@ -77,29 +77,6 @@
         {
           "label": "班级办事簿（通知查询）",
           "url": "https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin"
-        }
-      ],
-      "default_on": true
-    },
-    {
-      "id": "cet",
-      "title": "英语四六级报名（2026 年 12 月考试）",
-      "category": "study",
-      "start_date": "2026-09-20",
-      "start_time": "09:00",
-      "end_date": "2026-09-28",
-      "end_time": "17:00",
-      "detail": "报名时间：2026 年 9 月 20 日 9:00 开始，9 月 28 日 17:00 截止。登录「全国大学英语四、六级考试（CET）」网站注册报名，核对信息、上传照片后缴费。（群通知里出现过 9 月 26 日截止的说法，教务老师和教务处通知均为 9 月 28 日 17:00，以教务处为准。）",
-      "note": "",
-      "source": "教务老师通知 + 群通知",
-      "links": [
-        {
-          "label": "CET 报名网站 cet-bm.neea.edu.cn",
-          "url": "http://cet-bm.neea.edu.cn/"
-        },
-        {
-          "label": "教务处通知原文",
-          "url": "https://jwc.cqu.edu.cn/info/1080/6178.htm"
         }
       ],
       "default_on": true
@@ -250,6 +227,26 @@
         {
           "label": "打开链接",
           "url": "https://sxic.cqu.edu.cn/upm/"
+        }
+      ],
+      "files": [],
+      "default_on": true
+    },
+    {
+      "id": "emul0wr9b",
+      "title": "新生网上电子注册学籍核对",
+      "category": "cmucu9rj8",
+      "start_date": "2026-09-28",
+      "start_time": null,
+      "end_date": "2026-10-15",
+      "end_time": "00:00",
+      "detail": "新生通过学籍电子注册才能获得学籍，具有学籍的学生才能获得毕业证书",
+      "note": "",
+      "source": "",
+      "links": [
+        {
+          "label": "打开链接",
+          "url": "https://jwc.cqu.edu.cn/info/1080/6186.htm"
         }
       ],
       "files": [],
