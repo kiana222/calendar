@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-26T03:39:55.966Z",
+  "updated_at": "2026-09-28T07:05:56.018Z",
   "categories": [
     {
       "id": "all",
@@ -54,6 +54,13 @@
     {
       "id": "cmucu9rj8",
       "name": "行政",
+      "color": "#8a94a6",
+      "note": "",
+      "default_on": true
+    },
+    {
+      "id": "cmukwa7lk",
+      "name": "活动",
       "color": "#8a94a6",
       "note": "",
       "default_on": true
@@ -205,6 +212,46 @@
       "note": "",
       "source": "",
       "links": [],
+      "files": [],
+      "default_on": true
+    },
+    {
+      "id": "emukweqnw",
+      "title": "2026高百接力赛西南站暨重庆大学“奔向2029·逐梦百年新重大”校园健康跑活动】",
+      "category": "cmukwa7lk",
+      "start_date": null,
+      "start_time": null,
+      "end_date": "2026-09-28",
+      "end_time": "18:00",
+      "detail": "学校将于2026年10月11日（星期日）9:00在虎溪校园举办2026高百接力赛西南站暨重庆大学“奔向2029·逐梦百年新重大”校园健康跑活动",
+      "note": "有两个文件需要填写，请进群下载",
+      "source": "",
+      "links": [
+        {
+          "label": "打开链接",
+          "url": "https://docs.qq.com/form/page/DV1dhUEFBR3NLU2hz"
+        }
+      ],
+      "files": [],
+      "default_on": true
+    },
+    {
+      "id": "emukwilm5",
+      "title": "2026级大学生科研训练计划（SRTP）项目申报",
+      "category": "study",
+      "start_date": "2026-09-28",
+      "start_time": null,
+      "end_date": "2026-10-21",
+      "end_time": "00:00",
+      "detail": "",
+      "note": "申报平台需要校园网登录",
+      "source": "",
+      "links": [
+        {
+          "label": "打开链接",
+          "url": "https://sxic.cqu.edu.cn/upm/"
+        }
+      ],
       "files": [],
       "default_on": true
     }
