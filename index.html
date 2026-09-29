@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="auto">
+<html lang="zh-CN" data-theme="auto" data-build="ljm-3.2">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
+<meta name="author" content="李健铭（LJM）">
+<meta name="generator" content="LJM-ClassCalendar/3.2">
+<meta name="ljm-signature" content="LJM-2026-CLASS-CALENDAR-V3.2">
 <title>班级日历 · 日程提醒</title>
 <style>
 :root{--bg:#f4f6fb;--card:#fff;--card2:#f8fafc;--text:#161a23;--muted:#5f6a7d;--line:rgba(20,25,40,.1);
 --accent:#3b6cf6;--soft:rgba(59,108,246,.12);--urgent:#e5484d;--warn:#d9930b;--ok:#12a594;
---sh:0 1px 2px rgba(16,24,40,.04),0 10px 26px rgba(16,24,40,.06)}
+--sh:0 1px 2px rgba(16,24,40,.04),0 10px 26px rgba(16,24,40,.06);
+--ljm:3.2;--ljm-mark:"LJM"}
 :root[data-theme=dark]{--bg:#0e1116;--card:#171b23;--card2:#1d222c;--text:#e7eaf1;--muted:#9aa4b6;
 --line:rgba(255,255,255,.1);--soft:rgba(59,108,246,.22);--sh:0 10px 30px rgba(0,0,0,.35)}
 @media(prefers-color-scheme:dark){:root[data-theme=auto]{--bg:#0e1116;--card:#171b23;--card2:#1d222c;
@@ -16,6 +20,9 @@
 *{box-sizing:border-box}
 body{margin:0;background:radial-gradient(900px 420px at 12% -8%,var(--soft),transparent 60%),var(--bg);color:var(--text);
 font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif}
+/* 背景水印：LJM（作者标识，不遮挡内容） */
+.ljm-wm{position:fixed;inset:0;z-index:0;pointer-events:none;color:var(--text);opacity:.5}
+header,main,footer{position:relative;z-index:1}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 header{position:sticky;top:0;z-index:20;display:flex;gap:12px;align-items:center;flex-wrap:wrap;
 padding:10px clamp(12px,3vw,26px);background:var(--card);border-bottom:1px solid var(--line)}
@@ -107,6 +114,7 @@ footer{max-width:1040px;margin:0 auto;padding:16px clamp(12px,3vw,26px) 36px;col
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--text);color:var(--card);
 padding:9px 16px;border-radius:99px;font-size:13px;box-shadow:var(--sh);z-index:50}
 .toast[hidden]{display:none}
+.ljm-tag{font-size:10px;letter-spacing:2px;color:var(--muted);opacity:.45}
 .modal-mask{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;
 padding:20px;background:rgba(15,20,30,.45);backdrop-filter:blur(2px)}
 .modal-mask[hidden]{display:none}
@@ -144,6 +152,17 @@ header,.toolbar,.no-print,.acts,.pills,footer{display:none!important}body{backgr
 </style>
 </head>
 <body>
+<div class="ljm-wm" aria-hidden="true">
+  <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="ljmWatermark" width="230" height="150" patternUnits="userSpaceOnUse" patternTransform="rotate(-22)">
+        <text x="12" y="86" font-family="Arial,Helvetica,sans-serif" font-size="30" letter-spacing="7"
+              fill="currentColor" opacity="0.055">LJM</text>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#ljmWatermark)"/>
+  </svg>
+</div>
 <header>
   <div class="brand"><span class="dot"></span><span><b id="className">班级日历</b><small id="subline"></small></span></div>
   <button class="ghost" id="localChip" data-act="toggle-local" hidden style="font-size:12px;padding:4px 10px;flex:none"></button>
@@ -307,22 +326,13 @@ header,.toolbar,.no-print,.acts,.pills,footer{display:none!important}body{backgr
         <div class="g2">
           <div class="field"><label for="f-source">来源</label><input id="f-source" placeholder="群通知 / 手写清单"></div>
           <div class="field"><label for="f-note">备注（时间存疑等）</label><input id="f-note"></div>
-          <div class="field"><label for="f-ll">链接文字</label><input id="f-ll" placeholder="腾讯文档 / 报名入口"></div>
-          <div class="field"><label for="f-lu">链接地址</label><input id="f-lu" placeholder="https://"></div>
         </div>
         <div class="field">
-          <label>附件（Word / PDF / 图片等）</label>
-          <div class="pills" style="margin:0 0 8px">
-            <label class="ghost" style="cursor:pointer">选择文件
-              <input type="file" id="f-file" data-act="pick-file" style="display:none"></label>
-            <button class="ghost" data-act="upload-file" id="uploadFileBtn">上传到 GitHub</button>
-            <button class="ghost" data-act="attach-local" id="attachLocalBtn">存进数据里（小文件）</button>
+          <label>相关链接（可以加多条，每条都能写名字）</label>
+          <div id="linkList"></div>
+          <div class="pills" style="margin:6px 0 0">
+            <button class="ghost" data-act="add-link">+ 添加一条链接</button>
           </div>
-          <div id="fileList"></div>
-          <p class="hint" id="fileHint" style="margin:0">
-            选好文件后点「上传到 GitHub」，文件会放进仓库的 files 文件夹并自动生成下载链接（需要先在「发布到线上」保存 Token）；
-            没有 Token 就点「存进数据里」，适合 300KB 以内的小文件，会跟着 data.json / 更新链接一起发出去。
-          </p>
         </div>
         <div class="pills" style="margin:0"><button class="primary" data-act="save-event" id="saveBtn">添加这条日志</button>
           <button class="ghost" data-act="cancel-edit" id="cancelBtn" hidden>取消编辑</button></div>
@@ -335,7 +345,7 @@ header,.toolbar,.no-print,.acts,.pills,footer{display:none!important}body{backgr
 
 <footer><span id="footName"></span><span id="footUpdated"></span><span id="footSource"></span>
 <a href="https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin" target="_blank" rel="noopener noreferrer">班级办事簿 · 通知查询</a>
-<span>V3.1</span><span>未来信息01 李健铭、刘宝秋 联合制作</span></footer>
+<span>V3.2</span><span>未来信息01 李健铭 制作</span><span class="ljm-tag" title="LJM">LJM</span></footer>
 <div class="toast" id="toast" hidden></div>
 <div class="modal-mask" id="modal" hidden>
   <div class="modal-card">
@@ -354,7 +364,7 @@ header,.toolbar,.no-print,.acts,.pills,footer{display:none!important}body{backgr
 var WEEK=['一','二','三','四','五','六','日'];
 var DATA_KEY='cc-file-data-v1', PREF_KEY='cc-file-prefs-v1', ADMIN_KEY='cc-file-admin-v1';
 var GH_KEY='cc-file-gh-token-v1';
-var SEED_UPDATED='2026-09-22T21:00:00+08:00';
+var SEED_UPDATED='2026-09-29T21:00:00+08:00';
 
 var CATS=[
  {id:'all',name:'全体',color:'#3b6cf6',note:'全班都要做的事',default_on:true},
@@ -367,77 +377,6 @@ var CATS=[
 
 var SEED_EVENTS=[
  {
-  "id": "cadre_interview",
-  "title": "班干部竞选面试",
-  "category": "all",
-  "start_date": "2026-09-23",
-  "start_time": "18:00",
-  "end_date": "2026-09-23",
-  "end_time": "21:00",
-  "detail": "时间：9 月 23 日 18:00-21:00，请提前 5 分钟到场完成候场签到，逾期未到视为自动放弃竞选资格。\n地点：重庆大学沙坪坝校区八教；候场教室 A8211，面试教室 A8213、A8214。\n形式：无领导小组讨论（群面），重点考察沟通表达、团队协作、组织统筹、临场应变等综合素养。\n准备：每人准备 1 分钟以内的自我介绍，内容简洁精炼。\n提示：提前规划出行时间、熟悉校区场地，准时到场并遵守现场秩序；面试过程保持从容自信、文明礼貌；无故缺席视为自动放弃。",
-  "note": "具体分组和教室安排见群里发的表格图片",
-  "source": "群通知【班干部竞选面试安排】",
-  "links": [],
-  "default_on": true
- },
- {
-  "id": "course_makeup",
-  "title": "选课补选（第五阶段）",
-  "category": "study",
-  "start_date": "2026-09-23",
-  "start_time": "09:00",
-  "end_date": "2026-09-23",
-  "end_time": "23:00",
-  "detail": "第五阶段（学生补选）：9 月 23 日 9:00 - 23:00。\n选课地址：移动端——微信公众号搜索「重庆大学本科生院」，进入后点右下角「智慧教务」，用账号密码登录；PC 端——https://my.cqu.edu.cn/enroll\n补选路径：智慧教务（移动端）→ 申请服务 → 点「选课」；智慧教务（PC 端）→ 选课管理 → 点「选课」。",
-  "source": "选课通知",
-  "links": [
-   {
-    "label": "PC 端选课入口 my.cqu.edu.cn/enroll",
-    "url": "https://my.cqu.edu.cn/enroll"
-   }
-  ],
-  "default_on": true
- },
- {
-  "id": "party_apply",
-  "title": "入党申请书",
-  "category": "party",
-  "start_date": "2026-09-23",
-  "detail": "截止时间改为 9 月 23 日。入党申请书的落款时间还没写的，统一写到 20 号；已经写好的无需修改。交过申请书和自传的同学，还需填写【入党申请人信息收集】表，表格链接以群里最新通知为准。",
-  "note": "原通知为 9 月 19 日 17:00 收齐，后改为 9 月 23 日",
-  "source": "群通知 + 手写清单",
-  "links": [],
-  "default_on": true
- },
- {
-  "id": "emu7xl15w",
-  "title": "困难认定",
-  "category": "all",
-  "end_date": "2026-09-22",
-  "end_time": "12:00",
-  "detail": "学院：本科生院\n系：不填 \n专业：工科试验班（未来信息",
-  "note": "具体通知请在大群查找信息里搜索困难认定找辅导员发送的信息",
-  "links": [],
-  "default_on": true
- },
- {
-  "id": "emu94sqfp",
-  "title": "入团线上表格",
-  "category": "all",
-  "end_date": "2026-09-24",
-  "end_time": "17:00",
-  "links": [],
-  "default_on": true
- },
- {
-  "id": "emu94tpuj",
-  "title": "入团申请书",
-  "category": "all",
-  "end_date": "2026-09-25",
-  "links": [],
-  "default_on": true
- },
- {
   "id": "leave_rules",
   "title": "请假与归寝须知",
   "category": "all",
@@ -449,74 +388,8 @@ var SEED_EVENTS=[
     "url": "https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin"
    }
   ],
-  "default_on": true
- },
- {
-  "id": "cet",
-  "title": "英语四六级报名（2026 年 12 月考试）",
-  "category": "study",
-  "start_date": "2026-09-20",
-  "start_time": "09:00",
-  "end_date": "2026-09-28",
-  "end_time": "17:00",
-  "detail": "报名时间：2026 年 9 月 20 日 9:00 开始，9 月 28 日 17:00 截止。登录「全国大学英语四、六级考试（CET）」网站注册报名，核对信息、上传照片后缴费。（群通知里出现过 9 月 26 日截止的说法，教务老师和教务处通知均为 9 月 28 日 17:00，以教务处为准。）",
-  "note": "",
-  "source": "教务老师通知 + 群通知",
-  "links": [
-   {
-    "label": "CET 报名网站 cet-bm.neea.edu.cn",
-    "url": "http://cet-bm.neea.edu.cn/"
-   },
-   {
-    "label": "教务处通知原文",
-    "url": "https://jwc.cqu.edu.cn/info/1080/6178.htm"
-   }
-  ],
-  "default_on": true
- },
- {
-  "id": "league_file",
-  "title": "上交纸质团员档案 + 填自查表",
-  "category": "league",
-  "start_date": "2026-09-20",
-  "detail": "随身携带团员档案的同学，把档案交给本班同性别临时负责人，负责人核查无误后填写【腾讯文档】未来信息类 1-10 班团员档案材料自查表。档案里应有的材料：① 团员证【必须有】② 入团志愿书【必须有】③ 入团申请书（有就归档；没有的话后续统一安排补交）④ 团组织介绍信（有就归档，没有不强制要求）。档案丢失的同学，联系入团所在学校（单位）团组织申请补办，或请对方出具团员身份证明材料。转接前请在智慧团建上查看自己是否存在「团员身份未认证、缺少电子团籍」，如有需拍照上传志愿书，并联系团支部临时负责人完善手续。",
-  "note": "原文写「本周日内」，按 9 月 20 日算",
-  "source": "团组织关系转接通知",
-  "links": [
-   {
-    "label": "团员档案材料自查表（腾讯文档）",
-    "url": "https://docs.qq.com/form/page/DWmpBVFFud1BGU3dS"
-   }
-  ],
-  "default_on": false
- },
- {
-  "id": "green_channel",
-  "title": "绿色通道",
-  "category": "aid",
-  "start_date": "2026-09-23",
-  "start_time": "12:00",
-  "detail": "9 月 23 日中午 12 点以前完成。需要信封的找负责人拿。",
-  "note": "",
-  "source": "手写清单 + 群通知",
-  "links": [],
-  "default_on": false
- },
- {
-  "id": "league_relation",
-  "title": "智慧团建 · 团组织关系转接",
-  "category": "league",
-  "start_date": "2026-09-25",
-  "detail": "2026 年团员组织关系要通过「智慧团建」系统线上转接，同时线下接收团员档案、注册团员证，线上线下同时进行。9 月 25 日之前，请在智慧团建上发起团组织关系转接申请；申请发出后，及时提醒原所在团组织审批。团支部名称示例：重庆市重庆大学本科生院未来信息类 2026 级 1 班团支部。北京、福建、广东的新生团员可加入答疑 QQ 群：1109171535。",
-  "note": "",
-  "source": "团组织关系转接通知",
-  "links": [
-   {
-    "label": "智慧团建 zhtj.youth.cn",
-    "url": "https://zhtj.youth.cn/zhtj/"
-   }
-  ],
-  "default_on": false
+  "default_on": true,
+  "note": ""
  },
  {
   "id": "fitness_test",
@@ -562,6 +435,131 @@ var SEED_EVENTS=[
   "note": "",
   "source": "群通知",
   "links": [],
+  "default_on": true
+ },
+ {
+  "id": "emudw09yd",
+  "title": "智慧慕课学习",
+  "category": "study",
+  "start_date": null,
+  "start_time": null,
+  "end_date": "2026-10-18",
+  "end_time": null,
+  "detail": "",
+  "note": "",
+  "source": "",
+  "links": [],
+  "files": [],
+  "default_on": true
+ },
+ {
+  "id": "emudw0sug",
+  "title": "智慧慕课考试",
+  "category": "study",
+  "start_date": "2026-10-19",
+  "start_time": null,
+  "end_date": "2026-10-23",
+  "end_time": null,
+  "detail": "",
+  "note": "",
+  "source": "",
+  "links": [],
+  "files": [],
+  "default_on": true
+ },
+ {
+  "id": "emuhubj9k",
+  "title": "假期去向登记",
+  "category": "all",
+  "start_date": null,
+  "start_time": null,
+  "end_date": "2026-09-29",
+  "end_time": "16:00",
+  "detail": "所有人在智慧学工平台【节假日去向】填报",
+  "note": "",
+  "source": "",
+  "links": [
+   {
+    "label": "打开链接",
+    "url": "https://zhxg.cqu.edu.cn/dashboard"
+   }
+  ],
+  "files": [],
+  "default_on": true
+ },
+ {
+  "id": "emuhuchcw",
+  "title": "假期中离校请假",
+  "category": "all",
+  "start_date": null,
+  "start_time": null,
+  "end_date": "2026-09-29",
+  "end_time": "16:00",
+  "detail": "1. 9月29日16:00前，家长发短信给苏老师：19115289785\n2. 你截图短信，上传到智慧学工去向板块作为请假证明\n3. 返校后在系统完成返校登记\n✅返校查寝：10月8日23:00查寝，按时返校，不要迟到。\n✅其他时段离校，按学校常规请假手续办理。",
+  "note": "",
+  "source": "",
+  "links": [],
+  "files": [],
+  "default_on": true
+ },
+ {
+  "id": "emukweqnw",
+  "title": "2026高百接力赛西南站暨重庆大学“奔向2029·逐梦百年新重大”校园健康跑活动】",
+  "category": "cmukwa7lk",
+  "start_date": null,
+  "start_time": null,
+  "end_date": "2026-09-28",
+  "end_time": "18:00",
+  "detail": "学校将于2026年10月11日（星期日）9:00在虎溪校园举办2026高百接力赛西南站暨重庆大学“奔向2029·逐梦百年新重大”校园健康跑活动",
+  "note": "有两个文件需要填写，请进群下载",
+  "source": "",
+  "links": [
+   {
+    "label": "打开链接",
+    "url": "https://docs.qq.com/form/page/DV1dhUEFBR3NLU2hz"
+   }
+  ],
+  "files": [],
+  "default_on": true
+ },
+ {
+  "id": "emukwilm5",
+  "title": "2026级大学生科研训练计划（SRTP）项目申报",
+  "category": "study",
+  "start_date": "2026-09-28",
+  "start_time": null,
+  "end_date": "2026-10-21",
+  "end_time": "00:00",
+  "detail": "",
+  "note": "申报平台需要校园网登录",
+  "source": "",
+  "links": [
+   {
+    "label": "打开链接",
+    "url": "https://sxic.cqu.edu.cn/upm/"
+   }
+  ],
+  "files": [],
+  "default_on": true
+ },
+ {
+  "id": "emul0wr9b",
+  "title": "新生网上电子注册学籍核对",
+  "category": "cmucu9rj8",
+  "start_date": "2026-09-28",
+  "start_time": null,
+  "end_date": "2026-10-15",
+  "end_time": "00:00",
+  "detail": "新生通过学籍电子注册才能获得学籍，具有学籍的学生才能获得毕业证书",
+  "note": "",
+  "source": "",
+  "links": [
+   {
+    "label": "打开链接",
+    "url": "https://jwc.cqu.edu.cn/info/1080/6186.htm"
+   }
+  ],
+  "files": [],
   "default_on": true
  }
 ];
@@ -647,6 +645,8 @@ function loadPrefs(){var base={groups:{},overrides:{},done:{},removed:{},seenIds
 var prefs=loadPrefs();
 var data=loadData();
 var view='today', monthCursor=new Date(), dayFilter=null, editMode=false, editingId=null;
+var pendingLinks=[];   /* 表单里待保存的链接 */
+var LJM_BUILD='3.2';  /* LJM 构建标识 */
 /* 管理员口令：文件里只有哈希，没有明文；同学问不出、也看不到 */
 var PW_SALT='cc2026';
 var PW_SHA='8f5262bd01c759b01c3712ce6f2a49a00b1b7bce291dc77ca8504c61540aadb8';
@@ -683,17 +683,12 @@ function packEvent(e){var o={i:e.id,t:e.title,c:e.category};
  if(e.note)o.k=e.note;
  if(e.source)o.r=e.source;
  if(e.links&&e.links.length)o.l=e.links.map(function(l){return [l.label||'打开链接',l.url];});
- /* 附件：只把"外部链接"形式的附件放进链接（GitHub 上传得到的链接），dataURL 大文件带不动 */
- if(e.files&&e.files.length){
-  var okFiles=e.files.filter(function(f){return f.url&&f.url.indexOf('data:')!==0;});
-  if(okFiles.length)o.z=okFiles.map(function(f){return [f.name,f.url,f.size||0];});}
  if(e.default_on===false)o.f=0;
  return o;}
 function unpackEvent(o){return {id:o.i,title:o.t,category:o.c,
   start_date:o.s||null,start_time:o.st||null,end_date:o.d||null,end_time:o.et||null,
   detail:o.x||'',note:o.k||'',source:o.r||'',
   links:(o.l||[]).map(function(pair){return {label:pair[0],url:pair[1]};}),
-  files:(o.z||[]).map(function(t){return {name:t[0],url:t[1],size:t[2]||0};}),
   default_on:o.f===0?false:true};}
 function packFull(){return {v:1,n:data.class_name,u:new Date().toISOString(),e:data.events.map(packEvent)};}
 /* 收件人手上应该有的"基础版本"：优先线上 data.json，其次页面内置数据 */
@@ -837,6 +832,23 @@ function doCopy(text,quiet){
   document.body.appendChild(ta);ta.select();var done=false;try{done=document.execCommand('copy');}catch(e){}
   ta.remove();if(done)ok();else toast('复制失败，长按文本框手动复制',3400);}
  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(ok).catch(manual);}else manual();}
+/* ---------- 相关链接（多条，可命名） ---------- */
+function renderLinkList(){
+ var box=$('#linkList');if(!box)return;
+ box.innerHTML=pendingLinks.length
+  ?pendingLinks.map(function(l,i){return '<div class="row" style="margin-bottom:6px;gap:8px">'
+     +'<input type="text" data-linklabel="'+i+'" value="'+esc(l.label||'')+'" placeholder="链接名字（例：报名表）" style="flex:0 0 34%">'
+     +'<input type="text" data-linkurl="'+i+'" value="'+esc(l.url||'')+'" placeholder="https://" style="flex:1;min-width:0">'
+     +'<button class="ghost danger" data-act="del-link" data-idx="'+i+'" style="flex:none">移除</button></div>';}).join('')
+  :'<p class="hint" style="margin:0">还没有链接。点下面「+ 添加一条链接」，可以在链接前写名字（例：报名表 / 通知原文 / 办事簿）。</p>';}
+function collectLinks(){
+ var labels=document.querySelectorAll('[data-linklabel]'),urls=document.querySelectorAll('[data-linkurl]'),out=[];
+ urls.forEach(function(u,i){
+  var url=(u.value||'').trim();if(!url)return;
+  var label=labels[i]?(labels[i].value||'').trim():'';
+  out.push({label:label||url,url:url});});
+ return out.length?out:pendingLinks.slice();}
+
 /* ---------- 一键发布：浏览器直接调 GitHub API，替你完成"打开 GitHub→粘贴→Commit" ---------- */
 function utf8B64(str){return btoa(unescape(encodeURIComponent(str)));}
 function siteUrl(){var origin=(location.origin&&location.origin!=='null')?location.origin:'';
@@ -859,12 +871,7 @@ function makeLinkUI(){
   $('#linkHint').textContent=res.kind==='diff'
    ?('已生成：链接 '+link.length+' 个字符（只带本次改动，群公告放得下）')
    :('已生成：链接 '+link.length+' 个字符（本次改动较多，带的是完整内容）');
-  if(link.length>800)$('#linkHint').textContent+='　⚠️ 偏长，QQ 群公告可能截断，建议改用「一键发布到 GitHub」';
-  var bigFiles=0;
-  data.events.forEach(function(e){
-   if(!isSubbed(e)||!e.files)return;
-   e.files.forEach(function(f){if(f.url&&f.url.indexOf('data:')===0)bigFiles++;});});
-  if(bigFiles)$('#linkHint').textContent+='　⚠️ 有 '+bigFiles+' 个附件是"存进数据里"的，更新链接带不动，请改用「一键发布到 GitHub」，或把附件改成 GitHub 链接';
+ if(link.length>800)$('#linkHint').textContent+='　⚠️ 偏长，QQ 群公告可能截断，建议改用「一键发布到 GitHub」';
   toast('链接已生成');return link;});}
 function copyLink(){var box=$('#linkBox');
  if(!box.value){makeLinkUI().then(function(link){doCopy(link);});return;}
@@ -877,6 +884,7 @@ function ghRepo(){
  return v||ghRepoGuess();}
 function setPubStatus(text){var el=$('#pubStatus');if(el)el.textContent=text||'';}
 function publishGitHub(){
+ pendingLinks=collectLinks();
  var token=(lsGet(GH_KEY)||'').trim();
  if(!token){toast('先填 GitHub Token，再点「保存 Token」',3600);return;}
  var repo=ghRepo();
@@ -894,7 +902,7 @@ function publishGitHub(){
   if(!res.ok)throw new Error('读取线上文件失败（HTTP '+res.status+'）');
   return res.json();})
  .then(function(info){
-  var body={message:'更新班级日历 '+new Date().toLocaleString('zh-CN'),content:utf8B64(payload)};
+  var body={message:'[LJM v'+LJM_BUILD+'] 更新班级日历 '+new Date().toLocaleString('zh-CN'),content:utf8B64(payload)};
   if(info&&info.sha)body.sha=info.sha;
   return fetch(api,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},head),
    body:JSON.stringify(body)});})
@@ -1138,7 +1146,6 @@ document.addEventListener('change',function(e){var el=e.target,act=el.dataset?el
  else if(act==='sub'){var ev=data.events.filter(function(x){return x.id===id;})[0];
   if(el.checked===isGroupOn(ev.category))delete prefs.overrides[id];else prefs.overrides[id]=el.checked;savePrefs();renderAll();}
  else if(act==='alert'){prefs.alertHours=Number(el.value);savePrefs();}
- else if(act==='pick-file'){chosenFile=(el.files&&el.files[0])||null;renderFileList();}
  else if(act==='ghrepo'){prefs.ghRepo=el.value.trim();savePrefs();}
  else if(act==='siteurl'){prefs.siteUrl=el.value.trim().replace(/#.*$/,'');savePrefs();toast('页面网址已保存',2200);}
  else if(act==='import-data-file'){var f=el.files[0];el.value='';if(!f)return;
@@ -1171,10 +1178,6 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-act
   prefs.removed={};savePrefs();location.reload();}
  else if(act==='notify'){askNotify();}
  else if(act==='publish-gh'){publishGitHub();}
- else if(act==='upload-file'){if(!chosenFile){toast('先点「选择文件」选一个文件',3000);return;}uploadToGitHub(chosenFile);}
- else if(act==='attach-local'){if(!chosenFile){toast('先点「选择文件」选一个文件',3000);return;}attachLocal(chosenFile);}
- else if(act==='del-file'){var fi=Number(el.dataset.idx);
-  if(!isNaN(fi)){pendingFiles.splice(fi,1);renderFileList();}}
  else if(act==='copy-site'){doCopy(siteUrl());}
  else if(act==='make-link'){makeLinkUI();}
  else if(act==='copy-link'){copyLink();}
@@ -1228,6 +1231,8 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-act
   toast('已导出，可发给同学导入');}
  else if(act==='reset'){if(!confirm('恢复成最初的示例日志？你新增和修改的内容会被删掉。'))return;
   data={class_name:'2026 级班级日历',updated_at:SEED_UPDATED,categories:CATS.slice(),events:SEED_EVENTS.slice()};saveData();renderAll();toast('已恢复示例数据');}
+ else if(act==='add-link'){pendingLinks=collectLinks().concat([{label:'',url:''}]);renderLinkList();}
+ else if(act==='del-link'){pendingLinks=collectLinks();pendingLinks.splice(Number(el.dataset.idx),1);renderLinkList();}
  else if(act==='save-event'){saveEvent();}
  else if(act==='cancel-edit'){resetForm();}
  else if(act==='edit'){startEdit(id);}
@@ -1237,54 +1242,6 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-act
 
 /* ---------- 分类管理 ---------- */
 /* 标记完成前先弹窗确认，避免误点直接把事项从列表里去掉 */
-/* ---------- 附件（Word / PDF / 图片） ---------- */
-var chosenFile=null,pendingFiles=[];
-function fmtSize(n){return n<1024?n+' B':(n<1024*1024?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(1)+' MB');}
-function renderFileList(){
- var box=$('#fileList');if(!box)return;
- box.innerHTML=pendingFiles.length
-  ?pendingFiles.map(function(f,i){return '<div class="row" style="margin-bottom:6px"><span class="info">📎 '+esc(f.name)+
-     ' <span class="hint">'+(f.size?fmtSize(f.size):'')+(f.url&&f.url.indexOf('data:')===0?'（存在数据里）':'（GitHub 链接）')+'</span></span>'+
-     '<button class="ghost danger" data-act="del-file" data-idx="'+i+'">移除</button></div>';}).join('')
-  :'';
- var hint=$('#fileHint');
- if(hint&&chosenFile)hint.textContent='已选择：'+chosenFile.name+'（'+fmtSize(chosenFile.size)+'）——点「上传到 GitHub」或「存进数据里」';}
-function fileToDataUrl(file){return new Promise(function(res,rej){
- var r=new FileReader();r.onload=function(){res(r.result);};r.onerror=rej;r.readAsDataURL(file);});}
-function fileToBase64(file){return new Promise(function(res,rej){
- var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]||'');};r.onerror=rej;r.readAsDataURL(file);});}
-function uploadToGitHub(file){
- var token=(lsGet(GH_KEY)||'').trim();
- if(!token){toast('先在「发布到线上」保存 GitHub Token，或者用「存进数据里」',5200);return;}
- var repo=ghRepo(),stamp=Date.now().toString(36);
- var path='files/'+stamp+'-'+file.name.replace(/[\\/:*?"<>|]/g,'_');
- var api='https://api.github.com/repos/'+repo+'/contents/'+encodeURIComponent(path).replace(/%2F/g,'/');
- var head={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json'};
- var btn=$('#uploadFileBtn');if(btn){btn.disabled=true;btn.textContent='上传中…';}
- toast('正在上传到 '+repo+'/files …',3600);
- fileToBase64(file).then(function(b64){
-  return fetch(api,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},head),
-   body:JSON.stringify({message:'上传附件 '+file.name,content:b64})});})
- .then(function(res){
-  if(!res.ok)return res.json().catch(function(){return{};}).then(function(e){
-   throw new Error('HTTP '+res.status+(e.message?'：'+e.message:''));});
-  return res.json();})
- .then(function(info){
-  var url=(info&&info.content&&info.content.download_url)||('https://raw.githubusercontent.com/'+repo+'/main/'+path);
-  pendingFiles.push({name:file.name,url:url,size:file.size});
-  chosenFile=null;if($('#f-file'))$('#f-file').value='';
-  renderFileList();if($('#fileHint'))$('#fileHint').textContent='已上传：'+file.name+'（保存这条日志后生效）';
-  toast('附件已上传到 GitHub',3200);})
- .catch(function(err){toast('上传失败：'+err.message,5200);})
- .finally(function(){if(btn){btn.disabled=false;btn.textContent='上传到 GitHub';}});}
-function attachLocal(file){
- if(file.size>300*1024&&!confirm('这个文件 '+fmtSize(file.size)+'，存进数据里会让 data.json 和更新链接变大，可能发不出去。仍要继续吗？'))return;
- fileToDataUrl(file).then(function(url){
-  pendingFiles.push({name:file.name,url:url,size:file.size});
-  chosenFile=null;if($('#f-file'))$('#f-file').value='';
-  renderFileList();if($('#fileHint'))$('#fileHint').textContent='已加入：'+file.name+'（保存这条日志后生效）';
-  toast('附件已加入这条日志',3000);});}
-
 var pendingDone=null;
 function askDone(id,checked){
  var ev=null;
@@ -1321,25 +1278,22 @@ function collectCats(){
    note:c.note||'',default_on:!!(defs[i]&&defs[i].checked)};});
  return data.categories;}
 
-function resetForm(){editingId=null;pendingFiles=[];chosenFile=null;renderFileList();
- if($('#f-file'))$('#f-file').value='';
- $('#f-title').value='';$('#f-sd').value='';$('#f-st').value='';$('#f-ed').value='';
- $('#f-et').value='';$('#f-detail').value='';$('#f-source').value='';$('#f-note').value='';$('#f-ll').value='';$('#f-lu').value='';
+function resetForm(){editingId=null;$('#f-title').value='';$('#f-sd').value='';$('#f-st').value='';$('#f-ed').value='';
+ $('#f-et').value='';$('#f-detail').value='';$('#f-source').value='';$('#f-note').value='';
+ pendingLinks=[];renderLinkList();
  $('#f-on').value='1';$('#f-cat').value=data.categories[0].id;$('#saveBtn').textContent='添加这条日志';$('#cancelBtn').hidden=true;}
 function startEdit(id){var ev=data.events.filter(function(x){return x.id===id;})[0];if(!ev)return;editingId=id;
  $('#f-title').value=ev.title;$('#f-cat').value=ev.category;$('#f-on').value=ev.default_on?'1':'0';
  $('#f-sd').value=ev.start_date||'';$('#f-st').value=ev.start_time||'';$('#f-ed').value=ev.end_date||'';$('#f-et').value=ev.end_time||'';
  $('#f-detail').value=ev.detail||'';$('#f-source').value=ev.source||'';$('#f-note').value=ev.note||'';
- pendingFiles=(ev.files||[]).slice();chosenFile=null;renderFileList();
- var l=(ev.links||[])[0];$('#f-ll').value=l?l.label:'';$('#f-lu').value=l?l.url:'';
+ pendingLinks=(ev.links||[]).map(function(l){return {label:l.label||'',url:l.url||''};});renderLinkList();
  $('#saveBtn').textContent='保存修改';$('#cancelBtn').hidden=false;
  $('#adminForm').scrollIntoView({behavior:'smooth',block:'start'});}
 function saveEvent(){var title=$('#f-title').value.trim();if(!title){toast('先写标题');return;}
- var links=[],url=$('#f-lu').value.trim();if(url)links.push({label:$('#f-ll').value.trim()||'打开链接',url:url});
+ var links=collectLinks();pendingLinks=links.slice();
  var ev={id:editingId||('e'+Date.now().toString(36)),title:title,category:$('#f-cat').value,
   start_date:$('#f-sd').value||null,start_time:$('#f-st').value||null,end_date:$('#f-ed').value||null,end_time:$('#f-et').value||null,
-  detail:$('#f-detail').value,note:$('#f-note').value,source:$('#f-source').value,links:links,
-  files:pendingFiles.slice(),default_on:$('#f-on').value==='1'};
+  detail:$('#f-detail').value,note:$('#f-note').value,source:$('#f-source').value,links:links,default_on:$('#f-on').value==='1'};
  if(editingId){data.events=data.events.map(function(x){return x.id===editingId?ev:x;});}else{data.events.push(ev);}
  saveData();resetForm();renderAll();toast('已保存');}
 
@@ -1350,11 +1304,31 @@ document.documentElement.dataset.theme=prefs.theme||'auto';
 var hv=location.hash.replace('#','');
 if(['today','log','month','mine','admin'].indexOf(hv)>=0)view=hv;
 /* 先读仓库数据、再解链接，最后一次性渲染：避免先闪一下旧内容、再补上「新」标记 */
+/* 打开群里的更新链接：把链接里的数据解出来合并（老链接也兼容） */
+var linkLoaded=false;
+function decodeFrag(frag){
+ if(frag.indexOf('z1.')===0)return inflateStr(b64ToBytes(frag.slice(3))).then(function(t){return JSON.parse(t);});
+ if(frag.indexOf('p1.')===0)return Promise.resolve(JSON.parse(new TextDecoder().decode(b64ToBytes(frag.slice(3)))));
+ return Promise.resolve(JSON.parse(b64d(frag)));}
+function applyLinkFromHash(quiet){
+ var h=location.hash||'';if(h.indexOf('#d=')!==0)return Promise.resolve(false);
+ var frag=h.slice(3);
+ return decodeFrag(frag).then(function(raw){
+  var pack=unpackData(raw);if(!pack)throw new Error('empty');
+  LINK_DATA=pack;data=loadData();linkLoaded=true;
+  if(quiet)return true;
+  var fresh=trackNew();renderAll();
+  toast(fresh?('已载入最新数据，有 '+fresh+' 条新通知'):'已载入链接里的最新数据',3000);
+  return true;})
+ .catch(function(){
+  toast('链接没读全（可能被聊天软件截断了），已按网址上的内容显示',4200);
+  return false;});}
 loadRepoData().then(function(){
  if((location.hash||'').indexOf('#d=')===0)return applyLinkFromHash(true);
  return false;
 }).then(function(){
  data=loadData();
+ try{console.log('%c班级日历 V'+LJM_BUILD+' · build by LJM (李健铭)','color:#3b6cf6;font-weight:600');}catch(e){}
  renderAll();go(view);
  var fresh=trackNew();
  renderAll();

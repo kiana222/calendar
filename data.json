@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-28T09:07:01.162Z",
+  "updated_at": "2026-09-29T21:00:00+08:00",
   "categories": [
     {
       "id": "all",
@@ -79,7 +79,8 @@
           "url": "https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin"
         }
       ],
-      "default_on": true
+      "default_on": true,
+      "note": ""
     },
     {
       "id": "fitness_test",
