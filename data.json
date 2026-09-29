@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-29T21:00:00+08:00",
+  "updated_at": "2026-09-29T13:09:04.049Z",
   "categories": [
     {
       "id": "all",
@@ -79,23 +79,6 @@
           "url": "https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin"
         }
       ],
-      "default_on": true,
-      "note": ""
-    },
-    {
-      "id": "fitness_test",
-      "title": "体测免测 / 缓测申请",
-      "category": "study",
-      "start_date": "2026-10-31",
-      "detail": "免测：因疾病或残疾丧失运动能力、本学年无法参加测试的同学可申请，需提供诊断证明。缓测：因感冒、摔伤、生理期等突发情况无法参加本次集中测试及后续补测，但下学期可正常参加测试的同学可申请。两种都要在国庆节后把材料提交给辅导员签字，签字后在 2026 年 10 月 31 日前把免测、缓测申请材料提交到虎溪校园体育学院 201 室。因突发情况无法参加本次集中测试、但本学期可以参加补测的同学，向所在学院报备即可，不需要办缓测。以上情况都要填写体测缓测登记表。",
-      "note": "",
-      "source": "体育学院体测通知",
-      "links": [
-        {
-          "label": "体测缓测登记表（腾讯文档）",
-          "url": "https://docs.qq.com/form/page/DZWxWUUhPZ1NMdWNm"
-        }
-      ],
       "default_on": true
     },
     {
@@ -132,7 +115,7 @@
       "id": "emudw09yd",
       "title": "智慧慕课学习",
       "category": "study",
-      "start_date": null,
+      "start_date": "2026-09-29",
       "start_time": null,
       "end_date": "2026-10-18",
       "end_time": null,
@@ -140,7 +123,6 @@
       "note": "",
       "source": "",
       "links": [],
-      "files": [],
       "default_on": true
     },
     {
@@ -155,61 +137,6 @@
       "note": "",
       "source": "",
       "links": [],
-      "files": [],
-      "default_on": true
-    },
-    {
-      "id": "emuhubj9k",
-      "title": "假期去向登记",
-      "category": "all",
-      "start_date": null,
-      "start_time": null,
-      "end_date": "2026-09-29",
-      "end_time": "16:00",
-      "detail": "所有人在智慧学工平台【节假日去向】填报",
-      "note": "",
-      "source": "",
-      "links": [
-        {
-          "label": "打开链接",
-          "url": "https://zhxg.cqu.edu.cn/dashboard"
-        }
-      ],
-      "files": [],
-      "default_on": true
-    },
-    {
-      "id": "emuhuchcw",
-      "title": "假期中离校请假",
-      "category": "all",
-      "start_date": null,
-      "start_time": null,
-      "end_date": "2026-09-29",
-      "end_time": "16:00",
-      "detail": "1. 9月29日16:00前，家长发短信给苏老师：19115289785\n2. 你截图短信，上传到智慧学工去向板块作为请假证明\n3. 返校后在系统完成返校登记\n✅返校查寝：10月8日23:00查寝，按时返校，不要迟到。\n✅其他时段离校，按学校常规请假手续办理。",
-      "note": "",
-      "source": "",
-      "links": [],
-      "files": [],
-      "default_on": true
-    },
-    {
-      "id": "emukweqnw",
-      "title": "2026高百接力赛西南站暨重庆大学“奔向2029·逐梦百年新重大”校园健康跑活动】",
-      "category": "cmukwa7lk",
-      "start_date": null,
-      "start_time": null,
-      "end_date": "2026-09-28",
-      "end_time": "18:00",
-      "detail": "学校将于2026年10月11日（星期日）9:00在虎溪校园举办2026高百接力赛西南站暨重庆大学“奔向2029·逐梦百年新重大”校园健康跑活动",
-      "note": "有两个文件需要填写，请进群下载",
-      "source": "",
-      "links": [
-        {
-          "label": "打开链接",
-          "url": "https://docs.qq.com/form/page/DV1dhUEFBR3NLU2hz"
-        }
-      ],
       "files": [],
       "default_on": true
     },
