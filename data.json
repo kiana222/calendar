@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-09-29T13:09:04.049Z",
+  "updated_at": "2026-10-07T07:25:42.667Z",
   "categories": [
     {
       "id": "all",
@@ -178,6 +178,25 @@
         }
       ],
       "files": [],
+      "default_on": true
+    },
+    {
+      "id": "emuxs9hc5",
+      "title": "周末及节假日长期假条手续】",
+      "category": "all",
+      "start_date": "2026-10-08",
+      "start_time": "09:00",
+      "end_date": "2026-10-08",
+      "end_time": "17:30",
+      "detail": "家住主城，需要长期周末回家的同学，为了简化请假手续，可以办理“周末长期请假手续”\n请各位需要申请【周末长期假条】的同学认真阅读此通知，并准备好申请书一张，【10月8日】会统一收取一次，逾期不候！",
+      "note": "具体地点为A理117-2",
+      "source": "",
+      "links": [
+        {
+          "label": "周末长期请假离校申请表",
+          "url": "https://docs.qq.com/sheet/DWmhkVGRWVUVMVmZn?tab=000001"
+        }
+      ],
       "default_on": true
     }
   ]
