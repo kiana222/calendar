@@ -655,12 +655,23 @@ function validateResult(result,input){
   if(!out.category_ids.length)warn(i,'category_ids','请为这条通知选择至少一个分类');
   ['detail','source','note'].forEach(function(k){if(typeof e[k]!=='string')throw new Error('说明字段无效');out[k]=e[k];});
   if([out.title,out.detail,out.source,out.note].some(function(s){return /模型存疑|尚无统一确认|请管理员核实|存在歧义/.test(s);}))throw new Error('摘要混入了内部存疑提示，请重新整理或手动编辑');
+  var midnight={};e=Object.assign({},e);
+  ['start','end'].forEach(function(prefix){
+   var dateKey=prefix+'_date',timeKey=prefix+'_time',evidence=e.time_evidence||{};
+   var dateEvidence=evidence[dateKey],timeEvidence=evidence[timeKey];
+   if(typeof dateEvidence!=='string'||!input.text.includes(dateEvidence)||typeof timeEvidence!=='string'||!input.text.includes(timeEvidence)||timeFromEvidence(timeEvidence)!=='24:00')return;
+   var sourceDay=dateFromEvidence(dateEvidence,input);if(!validDate(sourceDay))return;
+   var next=new Date(sourceDay+'T00:00:00Z');next.setUTCDate(next.getUTCDate()+1);var nextDay=next.toISOString().slice(0,10);
+   if((e[dateKey]===sourceDay&&e[timeKey]==='24:00')||(e[dateKey]===nextDay&&e[timeKey]==='00:00')){
+    e[dateKey]=nextDay;e[timeKey]='00:00';midnight[dateKey]=midnight[timeKey]=true;
+   }
+  });
   out.time_evidence={};
   ['start_date','end_date','start_time','end_time'].forEach(function(k){
    var v=e[k];if(v!==null&&v!==undefined&&!(k.endsWith('date')?validDate(v):validTime(v)))throw new Error('整理结果包含无效日期或时间');out[k]=v||null;
    var evidence=e.time_evidence&&e.time_evidence[k];
    if(v){
-    var supported=typeof evidence==='string'&&evidence&&input.text.includes(evidence)&&(k.endsWith('date')?dateFromEvidence(evidence,input):timeFromEvidence(evidence))===v;
+    var supported=typeof evidence==='string'&&evidence&&input.text.includes(evidence)&&(midnight[k]||(k.endsWith('date')?dateFromEvidence(evidence,input):timeFromEvidence(evidence))===v);
     if(!supported){out[k]=null;warn(i,k,'请根据原通知确认'+({start_date:'开始日期',end_date:'截止日期',start_time:'开始时间',end_time:'截止时间'})[k]+'，模型给出的 '+v+' 缺少可核对的原文依据');}
     else out.time_evidence[k]=evidence;
    }
@@ -710,7 +721,6 @@ function mergeData(base,local,remote){
 }
 return {clone:clone,equal:equal,categoryIds:categoryIds,publicEvent:publicEvent,validDate:validDate,validTime:validTime,extractUrls:extractUrls,validateInput:validateInput,validateResult:validateResult,duplicates:duplicates,mergeData:mergeData};
 });
-
 </script>
 <script>
 (function(){
@@ -1705,7 +1715,12 @@ async function runOrganizer(){
   var endpoint=prefs.organizerUrl.replace(/\/$/,'');if(!endpoint.endsWith('/organize'))endpoint+='/organize';
   var response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+orgCode},body:JSON.stringify(input),signal:orgController.signal});
   if(seq!==orgSequence)return;
-  if(!response.ok){if(response.status===401)throw new Error('整理授权码无效，请重新填写');throw new Error('整理服务暂时不可用，请稍后重试；原文已保留');}
+  if(!response.ok){
+   var failure=null;try{failure=await response.json();}catch(ignore){}
+   var reason=failure&&typeof failure.error==='string'&&failure.error.trim()?failure.error.trim().slice(0,200):'整理服务暂时不可用，请稍后重试；原文已保留';
+   if(response.status===401)reason='整理授权码无效，请重新填写';
+   throw new Error(reason+'（HTTP '+response.status+'）');
+  }
   var result=await response.json();if(seq!==orgSequence)return;
   orgInput=input;orgResult=NoticeCore.validateResult(result,input);
   orgResult.events.forEach(function(e){if(!e.start_date)e.start_date=organizedOn;});
