@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-10-09T07:09:23.547Z",
+  "updated_at": "2026-10-28T15:34:40.961Z",
   "categories": [
     {
       "id": "all",
@@ -79,7 +79,10 @@
           "url": "https://docs.qq.com/sheet/DWkhOdnNsa3dLTFhK?tab=jyfkin"
         }
       ],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "all"
+      ]
     },
     {
       "id": "national_day",
@@ -89,7 +92,10 @@
       "note": "",
       "source": "群通知【20250915通知1】",
       "links": [],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "all"
+      ]
     },
     {
       "id": "train_ticket",
@@ -99,7 +105,10 @@
       "note": "",
       "source": "群通知",
       "links": [],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "all"
+      ]
     },
     {
       "id": "safety_notice",
@@ -109,7 +118,10 @@
       "note": "",
       "source": "群通知",
       "links": [],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "all"
+      ]
     },
     {
       "id": "emudw09yd",
@@ -123,7 +135,10 @@
       "note": "",
       "source": "",
       "links": [],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "study"
+      ]
     },
     {
       "id": "emudw0sug",
@@ -138,7 +153,10 @@
       "source": "",
       "links": [],
       "files": [],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "study"
+      ]
     },
     {
       "id": "emukwilm5",
@@ -158,7 +176,10 @@
         }
       ],
       "files": [],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "study"
+      ]
     },
     {
       "id": "emul0wr9b",
@@ -178,7 +199,10 @@
         }
       ],
       "files": [],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "cmucu9rj8"
+      ]
     },
     {
       "id": "emv0lrt35",
@@ -192,7 +216,10 @@
       "note": "联系电话：13752922349，邹老师",
       "source": "",
       "links": [],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "study"
+      ]
     },
     {
       "id": "emv0mjcl9",
@@ -211,7 +238,32 @@
           "url": "https://docs.qq.com/sheet/DZWtFdkxnVU5aUk1D?tab=07lqzo"
         }
       ],
-      "default_on": true
+      "default_on": true,
+      "category_ids": [
+        "cmucu9rj8"
+      ]
+    },
+    {
+      "title": "2026年秋季学期学生思想动态调查",
+      "category_ids": [
+        "all"
+      ],
+      "links": [
+        {
+          "label": "调查问卷",
+          "url": "https://v.wjx.cn/vm/elFcrXb.aspx"
+        }
+      ],
+      "detail": "学工部开展2026年秋季学期学生思想动态调查，请全体同学参加。问卷链接：https://v.wjx.cn/vm/elFcrXb.aspx。调查截至2026年11月30日。",
+      "source": "学工部",
+      "note": "",
+      "start_date": null,
+      "end_date": "2026-11-30",
+      "start_time": null,
+      "end_time": null,
+      "id": "e26cfd7a081794290a243331973e49e4c",
+      "default_on": true,
+      "category": "all"
     }
   ]
 }
