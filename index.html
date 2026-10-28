@@ -458,7 +458,7 @@ header,.toolbar,.no-print,.acts,.pills,footer,.more,.ljm-wm,.toolbar-row{display
 
     <h2 class="sec">自动整理通知</h2>
     <div class="card pad" id="organizerPanel">
-      <p class="hint">粘贴通知原文，自动整理成草稿；检查后点上传。可一次粘贴多条通知。</p>
+      <p class="hint">粘贴通知原文，自动整理成草稿；检查后点上传。可一次粘贴多条通知。未提供开始日期时，默认从整理当天开始。</p>
       <div class="field"><label for="orgText">通知原文</label><textarea id="orgText" rows="7" placeholder="在这里粘贴群通知，保留原文中的链接"></textarea></div>
       <div class="g2">
         <div class="field"><label for="orgDate">原通知发布日期（有“明天”等表述时填写）</label><input id="orgDate" type="date"></div>
@@ -1698,7 +1698,7 @@ async function runOrganizer(){
  var input={text:text,categories:data.categories.map(function(c){return {id:c.id,name:c.name,note:c.note||''};}),notice_date:$('#orgDate').value||null,context_year:$('#orgYear').value||null};
  try{input=NoticeCore.validateInput(input);}catch(e){orgStatus(e.message);return;}
  if(orgController)orgController.abort();orgController=new AbortController();
- var seq=++orgSequence;orgResult=null;orgCommitted=false;$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;
+ var seq=++orgSequence,organizedOn=isoOf(new Date());orgResult=null;orgCommitted=false;$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;
  $('#orgRun').disabled=true;orgStatus('正在整理通知…');
  var timeout=setTimeout(function(){orgController.abort();},55000);
  try{
@@ -1707,7 +1707,9 @@ async function runOrganizer(){
   if(seq!==orgSequence)return;
   if(!response.ok){if(response.status===401)throw new Error('整理授权码无效，请重新填写');throw new Error('整理服务暂时不可用，请稍后重试；原文已保留');}
   var result=await response.json();if(seq!==orgSequence)return;
-  orgInput=input;orgResult=NoticeCore.validateResult(result,input);renderOrganizerDrafts();
+  orgInput=input;orgResult=NoticeCore.validateResult(result,input);
+  orgResult.events.forEach(function(e){if(!e.start_date)e.start_date=organizedOn;});
+  renderOrganizerDrafts();
   orgStatus(orgResult.events.length?'已整理 '+orgResult.events.length+' 条，可直接修改预览，检查后上传':'未识别到通知，请检查原文后重新整理');
  }catch(e){if(seq===orgSequence)orgStatus(e.name==='AbortError'?'整理已取消或超时，原文已保留，可重新整理':e.message);}
  finally{clearTimeout(timeout);if(seq===orgSequence)$('#orgRun').disabled=false;}
