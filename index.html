@@ -314,7 +314,11 @@ header,.toolbar,.no-print,.acts,.pills,footer,.more,.ljm-wm,.toolbar-row{display
 /* V4.0 existing organizer layout */
 .org-draft{padding:16px;margin:14px 0}.org-cats{display:flex;flex-wrap:wrap;gap:10px;border:1px solid var(--line);border-radius:12px;margin:10px 0 14px}.org-cats label{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:14px;color:var(--text)}.org-cats input[type=checkbox],.org-warning input[type=checkbox]{width:18px;height:18px;margin:0 4px 0 0;flex:0 0 18px;padding:0;accent-color:var(--accent)}#organizerPanel textarea{min-height:90px}#orgReview{width:min(680px,calc(100% - 24px));max-height:85vh;overflow:auto;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}#orgReview::backdrop{background:#0006}.org-warning{display:block;margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:10px}.org-warning small{display:block;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted);margin-top:8px}.org-duplicate{margin:14px 0;padding:12px;border:1px solid var(--line);border-radius:10px}.org-duplicate p{overflow-wrap:anywhere}.org-draft input,.org-draft textarea{max-width:100%}#f-cat{min-height:130px}#organizerPanel details{margin:12px 0}#organizerPanel summary{cursor:pointer}
 
-.meta .cat.badge{padding:0;border-radius:0;font-size:12.5px}.org-cats{margin-top:12px}#orgRemember{width:18px;height:18px;vertical-align:middle;margin:0 6px 0 0}#organizerPanel .org-draft h3{margin-top:0}.admin-grid>*{min-width:0}.org-draft .field label{display:grid;gap:6px}
+.category-list{display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px;max-width:100%}
+.cat.badge{padding:3px 9px;border-radius:8px;font-size:12px;line-height:1.5;font-weight:600;max-width:100%;min-width:0;white-space:normal;color:var(--text);background:var(--card2);border:1px solid var(--line2);background:color-mix(in srgb,var(--c) 12%,var(--card));border-color:color-mix(in srgb,var(--c) 32%,var(--card))}
+.cat.badge::before{width:7px;height:7px;border-radius:50%;flex:0 0 7px}.cat.badge>span{min-width:0;overflow-wrap:anywhere}
+.event .meta{margin-top:8px;gap:7px 14px}.event .category-list{flex-basis:100%}
+#mineList .category-list{display:flex;margin:6px 0}.org-cats{margin-top:12px}#orgRemember{width:18px;height:18px;vertical-align:middle;margin:0 6px 0 0}#organizerPanel .org-draft h3{margin-top:0}.admin-grid>*{min-width:0}.org-draft .field label{display:grid;gap:6px}
 </style>
 </head>
 <body>
@@ -458,7 +462,7 @@ header,.toolbar,.no-print,.acts,.pills,footer,.more,.ljm-wm,.toolbar-row{display
 
     <h2 class="sec">自动整理通知</h2>
     <div class="card pad" id="organizerPanel">
-      <p class="hint">粘贴通知原文，自动整理成草稿；检查后点上传。可一次粘贴多条通知。未提供开始日期时，默认从整理当天开始。</p>
+      <p class="hint">粘贴通知原文后自动整理一次；之后修改原文，请点“重新整理”。可一次粘贴多条通知，检查草稿后上传。未提供开始日期时，默认从整理当天开始。</p>
       <div class="field"><label for="orgText">通知原文</label><textarea id="orgText" rows="7" placeholder="在这里粘贴群通知，保留原文中的链接"></textarea></div>
       <div class="g2">
         <div class="field"><label for="orgDate">原通知发布日期（有“明天”等表述时填写）</label><input id="orgDate" type="date"></div>
@@ -472,6 +476,7 @@ header,.toolbar,.no-print,.acts,.pills,footer,.more,.ljm-wm,.toolbar-row{display
       </details>
       <div class="pills"><button class="ghost" data-act="org-run" id="orgRun">重新整理</button><button class="ghost" data-act="org-clear">清空草稿</button></div>
       <p class="hint" id="orgStatus" role="status">尚未配置服务时，原文会保留，仍可使用下方手动编辑。</p>
+      <details id="orgDiagnostics" hidden><summary>本次整理诊断（可提供给维护者）</summary><pre id="orgDiagnosticText" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px"></pre></details>
       <div id="orgDrafts"></div>
       <button class="primary" data-act="org-upload" id="orgUpload" hidden>上传整理结果</button>
     </div>
@@ -510,7 +515,7 @@ header,.toolbar,.no-print,.acts,.pills,footer,.more,.ljm-wm,.toolbar-row{display
     </div>
 
     <div class="card">
-      <h2 class="card-h" style="padding:18px 20px 0;margin-bottom:6px"><svg class="i"><use href="#i-list"/></svg>全部日志<small><span id="evCount">0</span> 条</small></h2>
+      <h2 class="card-h" style="padding:18px 20px 0;margin-bottom:6px"><svg class="i"><use href="#i-list"/></svg>日志管理<small><span id="evCount">0</span> 条</small></h2>
       <div class="table-wrap"><table><thead><tr><th>标题</th><th>分类</th><th>时间</th><th>默认</th><th></th></tr></thead><tbody id="evTable"></tbody></table></div>
     </div>
 
@@ -626,6 +631,23 @@ function timeFromEvidence(evidence){
  if(/下午|晚上|中午/.test(m[0])&&h<12)h+=12;if(/凌晨|上午/.test(m[0])&&h===12)h=0;
  return String(h).padStart(2,'0')+':'+String(minute).padStart(2,'0');
 }
+var AMOUNT_PATTERN=/(?:(?:人民币|[¥￥])\s*(\d+(?:,\d{3})*(?:\.\d+)?)(?:\s*(万元|千元|元))?|(\d+(?:,\d{3})*(?:\.\d+)?)\s*(万元|千元|元|%|％))/g;
+function numberTokens(text){return new Set((String(text).match(/\d+(?:,\d{3})*(?:\.\d+)?/g)||[]).map(function(n){n=n.replace(/,/g,'');return n.includes('.')?n.replace(/0+$/,'').replace(/\.$/,''):n;}));}
+function amountTokens(text){
+ var out=new Map(),re=new RegExp(AMOUNT_PATTERN.source,'g'),m;
+ while((m=re.exec(text))){
+  var number=(m[1]||m[3]).replace(/,/g,''),unit=m[1]?(m[2]||'元'):m[4];
+  var power=unit==='万元'?4:unit==='千元'?3:0,parts=number.split('.'),fraction=parts[1]||'';
+  fraction+='0'.repeat(Math.max(0,power-fraction.length));
+  var digits=parts[0]+fraction,places=fraction.length-power;
+  var whole=(places?digits.slice(0,-places):digits).replace(/^0+(?=\d)/,'');
+  var tail=places?digits.slice(-places).replace(/0+$/,''):'';
+  var key=whole+(tail?'.'+tail:'')+'|'+(unit==='%'||unit==='％'?'%':'元');
+  if(!out.has(key))out.set(key,m[0]);
+ }return out;
+}
+function invalidResult(code,message){return Object.assign(new Error(message),{code:code});}
+
 function validateInput(input){
  if(!input||typeof input.text!=='string'||!input.text.trim())throw new Error('请粘贴通知原文');
  if(input.text.length>16000)throw new Error('单次最多整理 16000 字，请分批粘贴');
@@ -640,8 +662,8 @@ function validateInput(input){
 }
 function validateResult(result,input){
  input=validateInput(input);
- if(!result||!Array.isArray(result.events)||!Array.isArray(result.warnings)||result.events.length>40)throw new Error('整理结果格式不正确，请重新整理');
- var allowed=input.categories.map(function(c){return c.id;}),urls=extractUrls(input.text),warnings=[];
+ if(!result||!Array.isArray(result.events)||!Array.isArray(result.warnings)||result.events.length>40)throw invalidResult('RESULT_FORMAT_INVALID','整理结果格式不正确，请重新整理');
+ var allowed=input.categories.map(function(c){return c.id;}),urls=extractUrls(input.text),sourceAmounts=amountTokens(input.text),warnings=[];
  function warn(i,field,question,evidence){warnings.push({event_index:i,field:field,question:question,evidence:evidence||''});}
  result.warnings.forEach(function(w){
   if(!w||typeof w.question!=='string'||!w.question.trim()||(w.event_index!==null&&(!Number.isInteger(w.event_index)||w.event_index<0||w.event_index>=result.events.length)))throw new Error('待确认问题格式不正确');
@@ -649,9 +671,9 @@ function validateResult(result,input){
   warn(w.event_index,String(w.field||'input'),w.question,String(w.evidence||''));
  });
  var events=result.events.map(function(e,i){
-  if(!e||typeof e.title!=='string'||!e.title.trim()||!Array.isArray(e.category_ids)||!Array.isArray(e.links)||!Array.isArray(e.key_facts))throw new Error('事项字段不完整');
+  if(!e||typeof e.title!=='string'||!e.title.trim()||!Array.isArray(e.category_ids)||!Array.isArray(e.links)||!Array.isArray(e.key_facts))throw invalidResult('RESULT_FORMAT_INVALID','事项字段不完整');
   var out={title:e.title.trim(),category_ids:categoryIds(e),links:[],key_facts:[]};
-  if(out.category_ids.some(function(id){return !allowed.includes(id);}))throw new Error('整理结果包含不存在的分类');
+  if(out.category_ids.some(function(id){return !allowed.includes(id);}))throw invalidResult('RESULT_CATEGORY_INVALID','整理结果包含不存在的分类');
   if(!out.category_ids.length)warn(i,'category_ids','请为这条通知选择至少一个分类');
   ['detail','source','note'].forEach(function(k){if(typeof e[k]!=='string')throw new Error('说明字段无效');out[k]=e[k];});
   if([out.title,out.detail,out.source,out.note].some(function(s){return /模型存疑|尚无统一确认|请管理员核实|存在歧义/.test(s);}))throw new Error('摘要混入了内部存疑提示，请重新整理或手动编辑');
@@ -668,7 +690,7 @@ function validateResult(result,input){
   });
   out.time_evidence={};
   ['start_date','end_date','start_time','end_time'].forEach(function(k){
-   var v=e[k];if(v!==null&&v!==undefined&&!(k.endsWith('date')?validDate(v):validTime(v)))throw new Error('整理结果包含无效日期或时间');out[k]=v||null;
+   var v=e[k];if(v!==null&&v!==undefined&&!(k.endsWith('date')?validDate(v):validTime(v)))throw invalidResult('RESULT_DATE_INVALID','整理结果包含无效日期或时间');out[k]=v||null;
    var evidence=e.time_evidence&&e.time_evidence[k];
    if(v){
     var supported=typeof evidence==='string'&&evidence&&input.text.includes(evidence)&&(midnight[k]||(k.endsWith('date')?dateFromEvidence(evidence,input):timeFromEvidence(evidence))===v);
@@ -682,23 +704,32 @@ function validateResult(result,input){
   if(out.start_date&&out.end_date&&out.start_date>out.end_date)throw new Error('开始日期晚于截止日期');
   if(out.start_date&&out.start_date===out.end_date&&out.start_time&&out.end_time&&out.start_time>out.end_time)throw new Error('开始时间晚于截止时间');
   e.links.forEach(function(l){
-   if(!l||typeof l.url!=='string'||!urls.includes(l.url))throw new Error('整理结果出现原文中没有的链接');
+   if(!l||typeof l.url!=='string'||!urls.includes(l.url))throw invalidResult('RESULT_LINK_INVALID','整理结果出现原文中没有的链接');
    if(!out.links.some(function(x){return x.url===l.url;}))out.links.push({url:l.url,label:typeof l.label==='string'&&l.label.trim()?l.label.trim():'相关链接'});
   });
-  var summary=[out.title,out.detail,out.note].join(' ');
+  var summary=[out.title,out.detail,out.note].join(' '),summaryNumbers=numberTokens(summary),summaryAmounts=amountTokens(summary);
+  summaryAmounts.forEach(function(raw,key){if(!sourceAmounts.has(key))throw invalidResult('FACT_NUMBER_MISMATCH','摘要中的金额或比例与原文不一致');});
   e.key_facts.forEach(function(f){
    if(!f||typeof f.evidence!=='string'||!f.evidence||!input.text.includes(f.evidence)||typeof f.value!=='string')throw new Error('关键事实的原文证据无效');
+   var factAmounts=amountTokens(f.value),evidenceAmounts=amountTokens(f.evidence);
+   factAmounts.forEach(function(raw,key){if(!evidenceAmounts.has(key))throw invalidResult('FACT_NUMBER_MISMATCH','关键事实中的金额或比例与原文引文不一致');});
    out.key_facts.push({kind:String(f.kind||'事实'),value:f.value,evidence:f.evidence});
-   var nums=f.value.match(/\d+(?:\.\d+)?/g)||[];
-   var dateConflict=/时间|日期|截止/.test(String(f.kind||''))&&warnings.some(function(w){return w.event_index===i&&/date|time/.test(w.field);});
-   if(nums.some(function(n){return !summary.includes(n);})&&!dateConflict)warn(i,'detail','请对照原文检查摘要是否保留关键数字：'+f.value,f.evidence);
+   var nums=Array.from(numberTokens(f.value.replace(AMOUNT_PATTERN,''))),evidenceNumbers=numberTokens(f.evidence);
+   var dateFact=/时间|日期|截止/.test(String(f.kind||''));
+   var dateConflict=dateFact&&warnings.some(function(w){return w.event_index===i&&/date|time/.test(w.field);});
+   if(!dateFact&&nums.some(function(n){return !evidenceNumbers.has(n);})){
+    if(/金额|费用|补助|补贴|价格/.test(String(f.kind||'')))throw invalidResult('FACT_NUMBER_MISMATCH','关键事实中的金额与原文引文不一致');
+    warn(i,'detail','请核对关键事实中的数字是否与原文引文一致：'+f.value,f.evidence);
+   }
+   if((nums.some(function(n){return !summaryNumbers.has(n);})||Array.from(factAmounts.keys()).some(function(k){return !summaryAmounts.has(k);}))&&!dateConflict)warn(i,'detail','请对照原文检查摘要是否保留关键数字：'+f.value,f.evidence);
    if(/仅限|不受理|不得|不含|未领取|本人签字/.test(f.evidence)&&!summary.includes(f.evidence))warn(i,'detail','请核对摘要中的资格、限制或材料要求：'+f.value,f.evidence);
   });
   return out;
  });
  var published=events.map(function(e){return [e.title,e.detail,e.source,e.note,e.start_date,e.end_date,e.start_time,e.end_time,e.links.map(function(l){return l.url;}).join(' ')].join(' ');}).join(' ');
- var numeric=(input.text.match(/\d+(?:\.\d+)?/g)||[]).filter(function(n,i,a){return a.indexOf(n)===i;});
- numeric.forEach(function(n){if(!published.includes(n)&&!warnings.some(function(w){return (w.evidence+' '+w.question).includes(n);}))warn(null,'detail','请核对原文中的数值 '+n+' 是否已保留在相应通知中',n);});
+ var publishedNumbers=numberTokens(published),publishedAmounts=amountTokens(published);
+ sourceAmounts.forEach(function(raw,key){if(!publishedAmounts.has(key)&&!warnings.some(function(w){return amountTokens(w.evidence).has(key);}))warn(null,'detail','请核对原文中的金额或比例 '+raw+' 是否已保留在相应通知中',raw);});
+ numberTokens(input.text.replace(AMOUNT_PATTERN,'')).forEach(function(n){if(!publishedNumbers.has(n)&&!warnings.some(function(w){return numberTokens(w.evidence+' '+w.question).has(n);}))warn(null,'detail','请核对原文中的数值 '+n+' 是否已保留在相应通知中',n);});
  (input.text.match(/(?:仅限|不受理|不得|不含|未领取|本人签字)[^。；\n]{0,100}/g)||[]).forEach(function(clause){if(!published.includes(clause)&&!warnings.some(function(w){return w.evidence.includes(clause);}))warn(null,'detail','请核对这项限制是否已完整保留：'+clause,clause);});
  urls.forEach(function(url){if(!events.some(function(e){return e.links.some(function(l){return l.url===url;});})&&!warnings.some(function(w){return w.question.includes(url)||w.evidence.includes(url);}))warn(null,'links','请确认这个链接的用途及对应事项：'+url,url);});
  if(!events.length&&!warnings.length)warn(null,'input','原文中未识别到可整理的通知');
@@ -1353,6 +1384,7 @@ function rangeText(ev){function s(d){return Number(d.slice(5,7))+'/'+Number(d.sl
 function overlaps(ev,date){var a=ev.start_date||ev.end_date;if(!a)return false;return date>=(a)&&date<=(ev.end_date||ev.start_date);}
 
 /* ---------- 渲染 ---------- */
+function categoryBadges(ev){return '<span class="category-list">'+NoticeCore.categoryIds(ev).map(function(id){var cat=catOf(id);return '<span class="cat badge" style="--c:'+esc(cat.color)+'"><span>'+esc(cat.name)+'</span></span>';}).join('')+'</span>';}
 function cardHTML(ev){var c=catOf(NoticeCore.categoryIds(ev)[0]),li=leftInfo(ev),done=isDone(ev);
  var isNew=!!(prefs.newIds&&prefs.newIds[ev.id]);
  var long=!!(ev.detail&&(ev.detail.length>110||ev.detail.split('\n').length>3));
@@ -1361,7 +1393,7 @@ function cardHTML(ev){var c=catOf(NoticeCore.categoryIds(ev)[0]),li=leftInfo(ev)
  +'<div class="body"><div class="head"><h3>'+esc(ev.title)+'</h3>'
  +(isNew?'<span class="badge new">新</span>':'')
  +'<span class="badge t-'+li.tone+'">'+esc(li.text)+'</span></div>'
- +'<p class="meta">'+NoticeCore.categoryIds(ev).map(function(id){var cat=catOf(id);return '<span class="cat badge" style="--c:'+esc(cat.color)+'">'+esc(cat.name)+'</span>';}).join('')+'<span><svg class="i"><use href="#i-clock"/></svg>'+esc(rangeText(ev))+'</span>'+(ev.note?'<span class="note">备注：'+esc(ev.note)+'</span>':'')+'</p>'
+ +'<p class="meta">'+categoryBadges(ev)+'<span><svg class="i"><use href="#i-clock"/></svg>'+esc(rangeText(ev))+'</span>'+(ev.note?'<span class="note">备注：'+esc(ev.note)+'</span>':'')+'</p>'
  +(ev.detail?'<p class="detail">'+esc(ev.detail)+'</p>':'')
  +(long?'<button class="more" data-act="expand" aria-expanded="false">展开全文</button>':'')
  +(ev.links&&ev.links.length?'<p class="links">'+ev.links.map(function(l){return '<a href="'+esc(l.url)+'" target="_blank" rel="noopener noreferrer"><svg class="i"><use href="#i-link"/></svg><span>'+esc(l.label||'打开链接')+'</span></a>';}).join('')+'</p>':'')
@@ -1420,7 +1452,7 @@ function renderMine(){var list=visible();
   +'<input class="sw" type="checkbox" data-act="group" data-id="'+c.id+'"'+(isGroupOn(c.id)?' checked':'')+' aria-label="订阅'+esc(c.name)+'"></label>';}).join('');
  $('#mineList').innerHTML=data.events.map(function(ev){return '<label class="row" style="cursor:pointer">'
   +'<input type="checkbox" data-act="sub" data-id="'+ev.id+'"'+(isSubbed(ev)?' checked':'')+'>'
-  +'<span class="info"><b>'+esc(ev.title)+'</b><br><small>'+esc(categoryNames(ev))+' · '+esc(rangeText(ev))
+  +'<span class="info"><b>'+esc(ev.title)+'</b>'+categoryBadges(ev)+'<small>'+esc(rangeText(ev))
   +(prefs.overrides[ev.id]!==undefined?' · 已单独设置':'')+(isDone(ev)?' · 已完成':'')+'</small></span></label>';}).join('');
  $('#mineSummary').textContent='当前订阅 '+list.length+' 条，其中未完成 '+list.filter(function(e){return !isDone(e);}).length+' 条';
  $('#alertHours').value=String(prefs.alertHours);renderNotify();}
@@ -1437,8 +1469,8 @@ function renderAdmin(){var cats=data.categories.map(function(c){return '<option 
  if($('#siteUrl'))$('#siteUrl').value=prefs.siteUrl||siteUrl();
  if(navigator.share&&$('#shareBtn'))$('#shareBtn').hidden=false;
  var selected=selectedCategories();$('#f-cat').innerHTML=cats;selectCategories(selected.length?selected:[data.categories[0].id]);$('#clsName').value=data.class_name;$('#updatedAt').value=data.updated_at.replace('T',' ').slice(0,16);
- $('#evCount').textContent=data.events.length;
- $('#evTable').innerHTML=data.events.slice().sort(bySort).map(function(ev){return '<tr><td>'+esc(ev.title)+'</td><td>'+esc(categoryNames(ev))+'</td>'
+ var events=activeEvents().slice().sort(bySort);$('#evCount').textContent=events.length;
+ $('#evTable').innerHTML=events.map(function(ev){return '<tr><td>'+esc(ev.title)+'</td><td>'+categoryBadges(ev)+'</td>'
   +'<td>'+esc(rangeText(ev))+'</td><td>'+(ev.default_on?'提醒':'不提醒')+'</td>'
   +'<td><button class="ghost" data-act="edit" data-id="'+ev.id+'">编辑</button> <button class="ghost danger" data-act="del" data-id="'+ev.id+'">删除</button></td></tr>';}).join('');
 }
@@ -1677,20 +1709,34 @@ function saveEvent(){var title=$('#f-title').value.trim();if(!title){toast('先�
 /* ---------- V4.0 通知整理 ---------- */
 var NoticeCore=globalThis.ClassNoticeCore;
 var BASE_KEY='cc-file-base-v4',ORG_CODE_KEY='cc-organizer-code-v4';
-var orgResult=null,orgInput=null,orgSequence=0,orgTimer=null,orgController=null,orgCode='',orgCommitted=false,orgCommittedData=null,orgSending=false;
+var orgResult=null,orgInput=null,orgSequence=0,orgTimer=null,orgRequest=null,orgAutoUsed=false,orgPastePending=false,orgCode='',orgCommitted=false,orgCommittedData=null,orgSending=false;
 var orgCandidates=[];
 function orgStatus(text){$('#orgStatus').textContent=text;}
+function abortOrganizer(reason){if(orgRequest){orgRequest.reason=reason;orgRequest.controller.abort();}}
+function orgDiagnostic(request,meta,code,status,open){
+ meta=meta&&meta.request_id===request.id?meta:{};
+ var stages=['origin','routing','authorization','input','upstream_request','upstream_response','model_output','validation','complete'];
+ var record={client_revision:'organizer-audit-20261029',request_id:request.id,stage:stages.includes(meta.stage)?meta.stage:request.stage,code:typeof code==='string'&&/^[A-Z_]+$/.test(code)?code:'CLIENT_ERROR',http_status:status||null,client_elapsed_ms:Math.max(0,Date.now()-request.started),page_origin:location.origin,service:request.service};
+ if(typeof meta.revision==='string'&&/^[a-z0-9-]{1,64}$/i.test(meta.revision))record.server_revision=meta.revision;
+ if(typeof meta.elapsed_ms==='number')record.server_elapsed_ms=meta.elapsed_ms;
+ if(typeof meta.upstream_status==='number')record.upstream_status=meta.upstream_status;
+ if(['stop','length','content_filter','tool_calls','unknown'].includes(meta.finish_reason))record.finish_reason=meta.finish_reason;
+ if(typeof meta.retry_after==='string')record.retry_after=meta.retry_after.slice(0,128);
+ $('#orgDiagnosticText').textContent=JSON.stringify(record,null,2);$('#orgDiagnostics').hidden=false;$('#orgDiagnostics').open=!!open;
+}
 function initOrganizer(){
  $('#orgEndpoint').value=prefs.organizerUrl||'';orgCode=lsGet(ORG_CODE_KEY)||'';
  $('#orgCode').value=orgCode;$('#orgRemember').checked=!!orgCode;
  var year=(data.class_name.match(/20\d\d/)||[])[0];if(year)$('#orgYear').value=year;
  ['orgDate','orgYear'].forEach(function(id){$('#'+id).addEventListener('change',function(){if($('#orgText').value.trim())$('#orgText').dispatchEvent(new Event('input',{bubbles:true}));});});
- $('#orgText').addEventListener('paste',function(){setTimeout(scheduleOrganize,0);});
- $('#orgText').addEventListener('input',function(){
-  orgSequence++;if(orgController)orgController.abort();clearTimeout(orgTimer);
-  $('#orgRun').disabled=false;
-  orgResult=null;orgCommitted=false;$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;
-  orgStatus('原文已变更，停顿后自动整理');orgTimer=setTimeout(runOrganizer,1200);
+ $('#orgText').addEventListener('paste',function(){orgPastePending=!orgAutoUsed;});
+ $('#orgText').addEventListener('input',function(event){
+  var shouldAuto=orgPastePending&&!orgAutoUsed&&(!event.inputType||event.inputType==='insertFromPaste');orgPastePending=false;
+  orgSequence++;abortOrganizer('input_changed');clearTimeout(orgTimer);$('#orgRun').disabled=false;
+  orgResult=null;orgCommitted=false;$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;$('#orgDiagnostics').hidden=true;
+  if(!$('#orgText').value.trim()){orgAutoUsed=false;orgStatus('请粘贴通知原文');return;}
+  if(shouldAuto){orgAutoUsed=true;orgStatus('原文已粘贴，即将自动整理一次');scheduleOrganize();}
+  else orgStatus('原文已修改，点击“重新整理”更新草稿');
  });
 }
 function scheduleOrganize(){clearTimeout(orgTimer);orgTimer=setTimeout(runOrganizer,600);}
@@ -1707,27 +1753,39 @@ async function runOrganizer(){
  if(!prefs.organizerUrl||!orgCode){orgStatus('原文已保留，请先填写整理服务地址和授权码');return;}
  var input={text:text,categories:data.categories.map(function(c){return {id:c.id,name:c.name,note:c.note||''};}),notice_date:$('#orgDate').value||null,context_year:$('#orgYear').value||null};
  try{input=NoticeCore.validateInput(input);}catch(e){orgStatus(e.message);return;}
- if(orgController)orgController.abort();orgController=new AbortController();
- var seq=++orgSequence,organizedOn=isoOf(new Date());orgResult=null;orgCommitted=false;$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;
- $('#orgRun').disabled=true;orgStatus('正在整理通知…');
- var timeout=setTimeout(function(){orgController.abort();},55000);
+ abortOrganizer('replaced');
+ var request={id:crypto.randomUUID(),controller:new AbortController(),reason:'',started:Date.now(),stage:'request',service:''};orgRequest=request;
+ var seq=++orgSequence,organizedOn=isoOf(new Date());orgAutoUsed=true;orgResult=null;orgCommitted=false;$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;
+ $('#orgRun').disabled=true;orgStatus('正在整理通知…（最长等待55秒）');
+ var timeout=setTimeout(function(){request.reason='timeout';request.controller.abort();},55000);
  try{
-  var endpoint=prefs.organizerUrl.replace(/\/$/,'');if(!endpoint.endsWith('/organize'))endpoint+='/organize';
-  var response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+orgCode},body:JSON.stringify(input),signal:orgController.signal});
-  if(seq!==orgSequence)return;
+  var endpoint=new URL(prefs.organizerUrl),endpointPath=endpoint.pathname.replace(/\/$/,'');if(!endpointPath.endsWith('/organize'))endpointPath+='/organize';endpoint.pathname=endpointPath;
+  endpoint.searchParams.set('request_id',request.id);request.service=endpoint.origin+endpoint.pathname;
+  orgDiagnostic(request,null,'IN_PROGRESS',null,false);
+  var response=await fetch(endpoint.href,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+orgCode},body:JSON.stringify(input),signal:request.controller.signal});
+  if(seq!==orgSequence)return;request.stage='reading_response';
   if(!response.ok){
    var failure=null;try{failure=await response.json();}catch(ignore){}
+   if(seq!==orgSequence)return;
    var reason=failure&&typeof failure.error==='string'&&failure.error.trim()?failure.error.trim().slice(0,200):'整理服务暂时不可用，请稍后重试；原文已保留';
    if(response.status===401)reason='整理授权码无效，请重新填写';
-   throw new Error(reason+'（HTTP '+response.status+'）');
+   var rejected=new Error(reason+'（HTTP '+response.status+'）');rejected.status=response.status;rejected.meta=failure&&failure.meta;rejected.code=rejected.meta&&rejected.meta.code||'SERVICE_HTTP_ERROR';throw rejected;
   }
-  var result=await response.json();if(seq!==orgSequence)return;
+  var result=await response.json();if(seq!==orgSequence)return;request.stage='validation';
   orgInput=input;orgResult=NoticeCore.validateResult(result,input);
   orgResult.events.forEach(function(e){if(!e.start_date)e.start_date=organizedOn;});
-  renderOrganizerDrafts();
+  renderOrganizerDrafts();request.stage='complete';orgDiagnostic(request,result.meta,'OK',response.status,false);
   orgStatus(orgResult.events.length?'已整理 '+orgResult.events.length+' 条，可直接修改预览，检查后上传':'未识别到通知，请检查原文后重新整理');
- }catch(e){if(seq===orgSequence)orgStatus(e.name==='AbortError'?'整理已取消或超时，原文已保留，可重新整理':e.message);}
- finally{clearTimeout(timeout);if(seq===orgSequence)$('#orgRun').disabled=false;}
+ }catch(e){
+  if(seq===orgSequence){
+   var code=e&&e.code,message=e&&e.message||'整理失败，原文已保留';
+   if(request.reason==='timeout'){code='CLIENT_TIMEOUT';message='整理请求超过55秒，原文已保留，可手动重新整理';}
+   else if(request.controller.signal.aborted){code='REQUEST_CANCELLED';message='本次整理已取消，原文已保留';}
+   else if(e instanceof TypeError&&['request','reading_response'].includes(request.stage)){code='NETWORK_ERROR';message='无法连接整理服务，原文已保留；请将下方诊断信息提供给维护者';}
+   else if(e instanceof SyntaxError&&request.stage==='reading_response'){code='SERVICE_JSON_INVALID';message='整理服务响应格式无效，原文已保留；请查看下方诊断信息';}
+   orgStatus(message);orgDiagnostic(request,e&&e.meta,code,e&&e.status,true);
+  }
+ }finally{clearTimeout(timeout);if(orgRequest===request)orgRequest=null;if(seq===orgSequence)$('#orgRun').disabled=false;}
 }
 function orgField(i,key,label,value,type){return '<div class="field"><label>'+esc(label)+'<input data-org-field="'+key+'" data-index="'+i+'" type="'+(type||'text')+'" value="'+esc(value||'')+'"></label></div>';}
 function renderOrganizerDrafts(){
@@ -1789,18 +1847,18 @@ function commitOrganizer(drafts,choices){
 async function uploadOrganizer(){
  if(orgSending)return;orgSending=true;$('#orgUpload').disabled=true;
  try{var ok=await publishGitHub();orgStatus(ok?'整理结果已上传':'草稿已保存到本机，尚未上传；补齐发布设置后可重试。需要修改时请在下方日志列表编辑，再用上方发布按钮上传。');
-  if(ok){orgResult=null;$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;}else{orgCommittedData=NoticeCore.clone(data);$('#orgUpload').textContent='重试上传（不会重复添加）';}
+  if(ok){orgAutoUsed=false;orgResult=null;$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;}else{orgCommittedData=NoticeCore.clone(data);$('#orgUpload').textContent='重试上传（不会重复添加）';}
  }finally{orgSending=false;$('#orgUpload').disabled=false;}
 }
 function organizerAction(act){
  if(!unlocked)return;
- if(act==='org-settings'){if(saveOrganizerSettings()&&$('#orgText').value.trim())runOrganizer();}
+ if(act==='org-settings'){if(saveOrganizerSettings())orgStatus($('#orgText').value.trim()?'整理设置已保存，点击“重新整理”应用新设置':'整理设置已保存');}
  else if(act==='org-forget'){orgCode='';$('#orgCode').value='';lsSet(ORG_CODE_KEY,'');orgStatus('已清除整理授权码');}
  else if(act==='org-run')runOrganizer();
  else if(act==='org-upload')reviewOrganizer();
  else if(act==='org-confirm')confirmOrganizer();
  else if(act==='org-back')$('#orgReview').close();
- else if(act==='org-clear'){orgSequence++;if(orgController)orgController.abort();clearTimeout(orgTimer);orgResult=null;orgCommitted=false;$('#orgText').value='';$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;$('#orgRun').disabled=false;orgStatus('已清空原文与草稿');}
+ else if(act==='org-clear'){orgSequence++;abortOrganizer('cleared');clearTimeout(orgTimer);orgAutoUsed=false;orgPastePending=false;$('#orgDiagnostics').hidden=true;orgResult=null;orgCommitted=false;$('#orgText').value='';$('#orgDrafts').innerHTML='';$('#orgUpload').hidden=true;$('#orgRun').disabled=false;orgStatus('已清空原文与草稿');}
 }
 function selectedCategories(){return Array.from($('#f-cat').selectedOptions).map(function(o){return o.value;});}
 function selectCategories(ids){Array.from($('#f-cat').options).forEach(function(o){o.selected=ids.includes(o.value);});}
