@@ -1,6 +1,6 @@
 {
   "class_name": "2026 级未来信息类 班级日历",
-  "updated_at": "2026-10-30T03:25:34.042Z",
+  "updated_at": "2026-10-30T12:47:46.616Z",
   "categories": [
     {
       "id": "all",
@@ -311,6 +311,28 @@
       "id": "e4366b6c076374bc5853feb7d9ed5649d",
       "default_on": true,
       "category": "study"
+    },
+    {
+      "title": "2026年秋季学期学生思想动态调查",
+      "category_ids": [
+        "all"
+      ],
+      "links": [
+        {
+          "label": "调查问卷",
+          "url": "https://v.wjx.cn/vm/elFcrXb.aspx"
+        }
+      ],
+      "detail": "学工部开展2026年秋季学期学生思想动态调查，请全体同学参加，通过问卷链接填写。调查截至2026年11月30日。",
+      "source": "学工部",
+      "note": "",
+      "start_date": "2026-10-30",
+      "end_date": "2026-11-30",
+      "start_time": null,
+      "end_time": null,
+      "id": "e36430ac1a6294c7787d70c35aca8fc8a",
+      "default_on": true,
+      "category": "all"
     }
   ]
 }
